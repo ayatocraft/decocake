@@ -1,421 +1,214 @@
 <!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#173b32">
-  <meta name="description" content="みんなでひとつのケーキをデコレーションするCake Share">
-  <title>Cake Share — みんなで作る3Dケーキ</title>
-  <style>
-    :root {
-      color-scheme: light;
-      --green:#173b32; --green2:#285747; --cream:#fbf5eb; --paper:#fffdf9;
-      --ink:#342c27; --muted:#82766d; --line:#e8ded1; --gold:#d5a64b;
-      --shadow:0 12px 35px rgba(49,35,24,.10);
-    }
-    * { box-sizing:border-box }
-    html,body { margin:0; min-height:100%; background:var(--cream); color:var(--ink);
-      font-family:ui-rounded,"Hiragino Maru Gothic ProN","Yu Gothic",system-ui,sans-serif }
-    button,input,select { font:inherit }
-    button { cursor:pointer }
-    .topbar { height:64px; display:flex; align-items:center; justify-content:space-between;
-      padding:0 22px; background:var(--green); color:#fff; position:relative; z-index:2 }
-    .brand { font-weight:850; letter-spacing:.03em; font-size:20px }
-    .brand span { color:#f1d69c }
-    .top-right { display:flex; align-items:center; gap:10px; font-size:12px; color:#dbe9df }
-    .live-dot { width:8px;height:8px;border-radius:50%;background:#8bd4a0;display:inline-block;margin-right:5px }
-    .app { max-width:1440px; margin:auto; padding:20px; }
-    .heading { display:flex; align-items:end; justify-content:space-between; gap:12px; margin:2px 0 16px }
-    h1 { font-size:clamp(21px,3vw,30px); margin:0 0 4px; letter-spacing:.01em }
-    .sub { color:var(--muted); font-size:13px }
-    .name-chip { border:1px solid var(--line); border-radius:999px; background:#fff; padding:9px 13px; font-size:12px }
-    .workspace { display:grid; grid-template-columns:minmax(0,1fr) 330px; gap:16px; align-items:stretch }
-    .stage-card,.panel { background:var(--paper); border:1px solid var(--line); border-radius:20px; box-shadow:var(--shadow); overflow:hidden }
-    .stage-head { display:flex; align-items:center; justify-content:space-between; padding:13px 16px; border-bottom:1px solid var(--line) }
-    .stage-head strong { font-size:13px }
-    .stage-head small { color:var(--muted) }
-    #stage { width:100%; height:min(66vh,680px); min-height:390px; display:block; touch-action:none; background:#d9c5a8 }
-    .stage-tools { display:flex; gap:8px; flex-wrap:wrap; padding:12px 14px; border-top:1px solid var(--line) }
-    .toolbtn,.primary,.secondary { border:1px solid var(--line); background:#fff; color:var(--ink); border-radius:11px; padding:10px 12px; font-size:12px; font-weight:700 }
-    .toolbtn:hover,.secondary:hover { background:#f6efe5 }
-    .primary { background:var(--green); color:white; border-color:var(--green) }
-    .primary:hover { background:var(--green2) }
-    .panel { padding:16px; display:flex; flex-direction:column; gap:17px }
-    .section h2 { margin:0 0 10px; font-size:14px }
-    .section p { margin:0 0 9px; color:var(--muted); font-size:11px; line-height:1.6 }
-    .field { display:flex; flex-direction:column; gap:6px; margin:8px 0 }
-    label { font-size:11px; color:var(--muted); font-weight:700 }
-    input[type="text"],select { width:100%; min-width:0; border:1px solid var(--line); border-radius:10px; padding:10px 11px; background:#fff; color:var(--ink); outline:none }
-    input:focus,select:focus { border-color:#8cae9b; box-shadow:0 0 0 3px rgba(40,87,71,.10) }
-    input[type="color"] { width:44px; height:36px; padding:2px; border:1px solid var(--line); border-radius:9px; background:#fff }
-    .color-row { display:flex; align-items:center; gap:9px }
-    .color-row input[type="text"] { flex:1 }
-    .swatches { display:grid; grid-template-columns:repeat(4,1fr); gap:7px }
-    .swatch { border:1px solid var(--line); border-radius:10px; background:#fff; padding:8px 4px; font-size:10px; color:var(--ink) }
-    .swatch i { display:block; width:100%; height:22px; border-radius:6px; margin-bottom:5px }
-    .history { display:flex; flex-direction:column; gap:8px; max-height:180px; overflow:auto }
-    .history-item { display:flex; gap:8px; align-items:flex-start; font-size:11px; line-height:1.45; padding:8px; background:#f8f3eb; border-radius:9px }
-    .history-item time { display:block; color:var(--muted); font-size:10px; margin-top:2px }
-    .empty { color:var(--muted); font-size:11px; padding:8px 0 }
-    .notice { color:var(--muted); font-size:10px; line-height:1.5 }
-    .modal-backdrop { position:fixed; inset:0; z-index:10; background:rgba(17,35,29,.72); display:grid; place-items:center; padding:20px }
-    .modal { width:min(100%,420px); background:var(--paper); border-radius:22px; padding:25px; box-shadow:0 25px 80px #0005 }
-    .modal-mark { font-size:38px; text-align:center }
-    .modal h2 { text-align:center; margin:8px 0 5px; font-size:23px }
-    .modal p { text-align:center; color:var(--muted); font-size:12px; line-height:1.6; margin:0 0 18px }
-    .modal .primary { width:100%; margin-top:12px; padding:13px }
-    .hidden { display:none !important }
-    .toast { position:fixed; bottom:18px; left:50%; transform:translateX(-50%); background:#203d32; color:#fff; padding:11px 16px; border-radius:999px; font-size:12px; z-index:20; opacity:0; pointer-events:none; transition:opacity .2s }
-    .toast.show { opacity:1 }
-    @media(max-width:850px) {
-      .app { padding:13px }
-      .workspace { grid-template-columns:1fr }
-      #stage { height:52vh; min-height:330px; max-height:560px }
-      .panel { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px }
-      .section.history-section { grid-column:1/-1 }
-    }
-    @media(max-width:520px) {
-      .topbar { height:56px; padding:0 14px }
-      .brand { font-size:18px }
-      .top-right .status-text { display:none }
-      .app { padding:10px }
-      .heading { align-items:flex-start; flex-direction:column; margin:4px 2px 12px }
-      .name-chip { align-self:flex-start }
-      .stage-card,.panel { border-radius:15px }
-      .stage-head { padding:10px 12px }
-      #stage { height:46svh; min-height:290px; max-height:470px }
-      .stage-tools { padding:9px; gap:6px }
-      .toolbtn { flex:1; padding:10px 7px }
-      .panel { grid-template-columns:1fr 1fr; padding:13px; gap:13px }
-      .section h2 { font-size:13px }
-      .section.history-section { grid-column:1/-1 }
-      .swatches { grid-template-columns:repeat(2,1fr) }
-    }
-    @media(prefers-reduced-motion:reduce) { * { scroll-behavior:auto !important; transition:none !important } }
-  </style>
-  <script type="importmap">
-    {
-      "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
-        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
-      }
-    }
-  </script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#173b32">
+<meta name="description" content="みんなでひとつの3DケーキをデコレーションするCake Share">
+<title>Cake Share — みんなで作る3Dケーキ</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<style>
+:root{--green:#173b32;--green2:#285747;--cream:#fbf5eb;--paper:#fffdf9;--ink:#342c27;--muted:#82766d;--line:#e8ded1;--gold:#d5a64b;--safeB:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--cream);color:var(--ink);font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif}body{overscroll-behavior:none}button,input,select{font:inherit}button{cursor:pointer;touch-action:manipulation}button:disabled{opacity:.4;cursor:not-allowed}
+.topbar{height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:var(--green);color:#fff;position:relative;z-index:3}.brand{font-weight:850;font-size:19px}.brand span{color:#f1d69c}.status{font-size:11px;color:#dbe9df}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#e5b65a;margin-right:6px}.app{max-width:1500px;margin:auto;padding:14px}.heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:3px 2px 12px}h1{font-size:clamp(19px,3vw,27px);margin:0 0 3px}.sub{font-size:12px;color:var(--muted)}.chip{background:#fff;border:1px solid var(--line);border-radius:99px;padding:8px 12px;font-size:11px;white-space:nowrap}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:13px;align-items:start}.stage-card,.panel{background:var(--paper);border:1px solid var(--line);border-radius:17px;overflow:hidden;box-shadow:0 8px 28px #49351c12}.stage-head{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--line);font-size:12px}.stage-head small{color:var(--muted)}#stage{width:100%;height:min(65vh,680px);min-height:360px;display:block;touch-action:none;background:#263e36;outline:none}.stage-tools{display:flex;gap:7px;flex-wrap:wrap;padding:10px;border-top:1px solid var(--line)}.btn{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:10px;padding:9px 11px;font-size:11px;font-weight:700}.btn.primary{background:var(--green);color:#fff;border-color:var(--green)}.btn.active{border-color:var(--green);background:#e8f0e9}.panel{padding:13px;display:flex;flex-direction:column;gap:14px}.section h2{font-size:13px;margin:0 0 8px}.field{display:flex;flex-direction:column;gap:5px;margin:7px 0}label{font-size:10px;color:var(--muted);font-weight:700}input[type=text],input[type=password],select{width:100%;min-width:0;border:1px solid var(--line);border-radius:9px;padding:9px;background:#fff;color:var(--ink);font-size:12px}input[type=color]{width:40px;height:34px;border:1px solid var(--line);border-radius:8px;background:#fff;padding:2px}.colorline{display:flex;gap:7px;align-items:center}.colorline input[type=text]{flex:1}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.hint{font-size:10px;color:var(--muted);line-height:1.5}.history{max-height:180px;overflow:auto;display:flex;flex-direction:column;gap:6px}.historyItem{padding:7px 8px;background:#f7f1e8;border-radius:8px;font-size:10px;line-height:1.45}.historyItem time{display:block;color:var(--muted);font-size:9px}.row{display:flex;gap:7px;align-items:center}.row>*{min-width:0}.modalback{position:fixed;inset:0;background:#10251fd9;z-index:20;display:grid;place-items:center;padding:18px}.modal{width:min(100%,410px);background:var(--paper);border-radius:20px;padding:22px;box-shadow:0 20px 70px #0005}.modal h2{text-align:center;font-size:21px;margin:5px 0}.modal p{text-align:center;font-size:12px;line-height:1.6;color:var(--muted);margin:5px 0 15px}.modal .btn{width:100%;padding:12px}.hidden{display:none!important}.toast{position:fixed;bottom:calc(14px + var(--safeB));left:50%;transform:translateX(-50%);background:#203d32;color:#fff;padding:10px 15px;border-radius:99px;font-size:11px;z-index:30;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90vw;text-align:center}.toast.show{opacity:1}.divider{height:1px;background:var(--line);margin:2px 0}
+@media(max-width:850px){.app{padding:10px}.layout{grid-template-columns:1fr}.panel{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.section.historySection,.section.supabaseSection{grid-column:1/-1}#stage{height:55svh;min-height:320px;max-height:570px}}
+@media(max-width:520px){.topbar{height:52px;padding:0 12px}.brand{font-size:17px}.status{font-size:0}.app{padding:8px}.heading{align-items:flex-start;flex-direction:column;margin:3px 2px 9px}.chip{align-self:flex-start}#stage{height:47svh;min-height:280px;max-height:460px}.stage-head{padding:9px 11px}.stage-head small{font-size:9px}.stage-tools{padding:8px;gap:5px}.stage-tools .btn{flex:1;padding:10px 5px;font-size:10px}.panel{padding:11px;gap:11px}.section h2{font-size:12px}.section.historySection,.section.supabaseSection{grid-column:1/-1}.grid3{grid-template-columns:repeat(3,1fr)}}
+@media(orientation:landscape) and (max-height:520px){.layout{grid-template-columns:minmax(0,1fr) 260px}.panel{display:flex;max-height:calc(100svh - 100px);overflow:auto}#stage{height:calc(100svh - 165px);min-height:230px}.heading{margin-bottom:7px}}
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">🎂 Cake <span>Share</span></div>
-    <div class="top-right"><span><i class="live-dot"></i><span class="status-text">3D EDITOR PREVIEW</span></span><span>🎄</span></div>
-  </header>
+<header class="topbar"><div class="brand">🎂 Cake <span>Share</span></div><div class="status"><i class="dot"></i><span id="connectionLabel">OFFLINE / LOCAL</span></div></header>
+<main class="app">
+<div class="heading"><div><h1 id="cakeTitle">みんなのクリスマスケーキ</h1><div class="sub">3D空間で、みんなとデコレーション。</div><div class="row" style="margin-top:8px;max-width:420px"><input id="cakeNameInput" type="text" maxlength="48" value="みんなのクリスマスケーキ" aria-label="ケーキ名"><button class="btn" id="setCakeName">名前を設定</button></div></div><div class="row"><button class="btn" id="shareBtn">🔗 共有リンク</button><div class="chip">編集者：<strong id="currentName">未入力</strong></div></div></div>
+<div class="layout">
+<section class="stage-card">
+<div class="stage-head"><strong>3Dケーキエディター</strong><small>ドラッグ：視点 / アイテム選択後：移動</small></div>
+<canvas id="stage" aria-label="3Dケーキ編集キャンバス" tabindex="0"></canvas>
+<div class="stage-tools">
+<button class="btn" id="undoBtn" disabled>↶ Undo</button><button class="btn" id="redoBtn" disabled>↷ Redo</button>
+<button class="btn" id="moveBtn">↔ 移動</button><button class="btn" id="rotateBtn">⟳ 回転</button>
+<button class="btn" id="scaleBtn">＋ サイズ</button><button class="btn" id="deleteBtn">削除</button>
+</div>
+<div class="stage-tools" style="border-top:0;padding-top:0">
+<button class="btn" id="resetView">視点リセット</button><button class="btn" id="addBerry">🍓 イチゴ</button><button class="btn" id="addCandle">🕯️ ろうそく</button><button class="btn" id="addPlate">💌 プレート</button><button class="btn" id="vrBtn">🥽 Cardboard</button><button class="btn" id="webxrBtn">WebXR</button>
+</div>
+</section>
+<aside class="panel">
+<section class="section"><h2>🎄 お部屋</h2><div class="field"><label for="roomPreset">背景テーマ</label><select id="roomPreset"><option value="classic">クラシックリビング</option><option value="snow">雪降る山小屋</option><option value="nordic">北欧クリスマス</option><option value="party">クリスマスパーティー</option><option value="night">星空のクリスマス</option></select></div></section>
+<section class="section"><h2>🍰 ケーキの味・色</h2><div class="field"><label for="flavor">味のプリセット</label><select id="flavor"><option value="strawberry">ストロベリー</option><option value="chocolate">チョコレート</option><option value="matcha">抹茶</option><option value="blueberry">ブルーベリー</option><option value="custom">カスタム</option></select></div>
+<div class="field"><label>クリーム RGB / HEX</label><div class="colorline"><input id="creamColor" type="color" value="#fff0e8"><input id="creamHex" type="text" value="#fff0e8" maxlength="7"></div></div>
+<div class="field"><label>スポンジ RGB / HEX</label><div class="colorline"><input id="spongeColor" type="color" value="#e9bd82"><input id="spongeHex" type="text" value="#e9bd82" maxlength="7"></div></div>
+<div class="field"><label>メッセージチョコ RGB / HEX</label><div class="colorline"><input id="chocoColor" type="color" value="#6b382c"><input id="chocoHex" type="text" value="#6b382c" maxlength="7"></div></div></section>
+<section class="section"><h2>💌 メッセージ</h2><div class="field"><label for="messageText">プレートの文字</label><input id="messageText" type="text" maxlength="28" placeholder="Merry Christmas!"></div><button class="btn" id="updateMessage">文字を反映</button></section>
+<section class="section"><h2>選択中のアイテム</h2><div id="selectedLabel" class="hint">アイテムをタップして選択</div><div class="grid2"><button class="btn" id="nudgeLeft">← 左</button><button class="btn" id="nudgeRight">右 →</button><button class="btn" id="nudgeFront">手前</button><button class="btn" id="nudgeBack">奥</button></div></section>
+<section class="section historySection"><h2>📝 編集履歴</h2><div class="history" id="history"><div class="hint">編集すると履歴が表示されます。</div></div></section>
+<section class="section supabaseSection"><h2>☁️ Supabase 接続設定</h2><p class="hint">URLと anon key を入力すると共有モードを試せます。未入力ならローカルモードで動作します。</p><div class="field"><label for="supabaseUrl">Project URL</label><input id="supabaseUrl" type="text" placeholder="https://xxxx.supabase.co"></div><div class="field"><label for="supabaseKey">Anon / Publishable key</label><input id="supabaseKey" type="password" placeholder="公開用キーを入力"></div><div class="row"><button class="btn primary" id="connectBtn">接続</button><button class="btn" id="localBtn">ローカルモード</button></div><div class="hint" id="dbStatus">データベース未接続。変更はこの端末に保存されます。</div></section>
+</aside></div></main>
+<div class="modalback" id="nameModal"><form class="modal" id="nameForm"><div style="font-size:34px;text-align:center">🎄🎂</div><h2>ケーキ作りに参加しよう！</h2><p>編集前に表示名を入力してください。履歴にこの名前が表示されます。ニックネームがおすすめです。</p><div class="field"><label for="displayName">あなたの名前</label><input id="displayName" type="text" maxlength="20" placeholder="例：サンタさん" autocomplete="nickname" required></div><button class="btn primary" type="submit">この名前で参加する</button></form></div>
+<div class="toast" id="toast" role="status"></div>
+<script type="module">
+import * as THREE from "three";
+import {OrbitControls} from "three/addons/controls/OrbitControls.js";
+import {TransformControls} from "three/addons/controls/TransformControls.js";
+import {XRButton} from "three/addons/webxr/XRButton.js";
 
-  <main class="app">
-    <div class="heading">
-      <div><h1 id="cakeTitle">みんなのクリスマスケーキ</h1><div class="sub">ひとつのケーキを、みんなでデコレーション。</div></div>
-      <div class="name-chip">編集者：<strong id="currentName">未入力</strong></div>
-    </div>
+const $=s=>document.querySelector(s), canvas=$("#stage");
+const state={name:"",cakeId:new URLSearchParams(location.search).get("cake")||"local",cakeName:"みんなのクリスマスケーキ",objects:[],history:[],future:[],selectedId:null,mode:"translate",room:"classic",flavor:"strawberry",message:"Merry Christmas!",colors:{cream:"#fff0e8",sponge:"#e9bd82",choco:"#6b382c"},db:null,channel:null,remote:false,applyingRemote:false,vr:false,gyro:false};
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false,powerPreference:"high-performance"});
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.12;renderer.xr.enabled=true;
+const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(38,1,.1,100);
+camera.position.set(5.8,4.5,7.4);
+const controls=new OrbitControls(camera,renderer.domElement);controls.target.set(0,1.15,0);controls.enableDamping=true;controls.dampingFactor=.07;controls.minDistance=4;controls.maxDistance=13;controls.maxPolarAngle=Math.PI*.49;controls.enablePan=true;
+scene.add(new THREE.HemisphereLight(0xffe9d1,0x584333,1.8));
+const keyLight=new THREE.DirectionalLight(0xffe4bd,2.8);keyLight.position.set(-4,8,5);keyLight.castShadow=true;keyLight.shadow.mapSize.set(1024,1024);scene.add(keyLight);
+const fillLight=new THREE.PointLight(0xffc66e,30,16);fillLight.position.set(4,3,2);scene.add(fillLight);
+const roomGroup=new THREE.Group();scene.add(roomGroup);const cakeGroup=new THREE.Group();scene.add(cakeGroup);
+const creamMat=new THREE.MeshStandardMaterial({color:state.colors.cream,roughness:.78}),spongeMat=new THREE.MeshStandardMaterial({color:state.colors.sponge,roughness:.9}),chocoMat=new THREE.MeshStandardMaterial({color:state.colors.choco,roughness:.45});
+const editable=new THREE.Group();cakeGroup.add(editable);const objectsById=new Map();let selected=null,plate=null,messagePlane=null,transform=null,historyLock=false,lastCommitted=null;
+const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();let pointerDown=null;
+const cloneData=o=>JSON.parse(JSON.stringify(o));
+function makeId(){return crypto.randomUUID?.()||"obj-"+Date.now()+"-"+Math.random().toString(36).slice(2,8)}
+function material(color,roughness=.7){return new THREE.MeshStandardMaterial({color,roughness})}
+function addCakeMesh(geo,mat,y){const m=new THREE.Mesh(geo,mat);m.position.y=y;m.castShadow=true;m.receiveShadow=true;cakeGroup.add(m);return m}
+function buildCake(){
+ for(const o of [...cakeGroup.children])if(o!==editable){cakeGroup.remove(o);if(o.geometry)o.geometry.dispose();}
+ const layers=[[1.55,1.62,.48,spongeMat,.62],[1.58,1.58,.13,creamMat,.93],[1.34,1.4,.43,spongeMat,1.2],[1.38,1.38,.13,creamMat,1.48],[1.39,1.39,.09,creamMat,1.58]];
+ for(const [rt,rb,h,mat,y] of layers)addCakeMesh(new THREE.CylinderGeometry(rt,rb,h,64),mat,y);
+ for(let i=0;i<16;i++){const a=i*Math.PI*2/16,d=new THREE.Mesh(new THREE.SphereGeometry(.145,16,12),creamMat);d.position.set(Math.cos(a)*1.18,1.68,Math.sin(a)*1.18);d.scale.y=1.18;d.castShadow=true;cakeGroup.add(d);}
+ plate=new THREE.Mesh(new THREE.BoxGeometry(1.08,.075,.47),chocoMat);plate.position.set(0,1.73,.15);plate.rotation.x=-.12;plate.castShadow=true;cakeGroup.add(plate);updateMessageMesh();
+}
+function updateMessageMesh(){
+ if(messagePlane){cakeGroup.remove(messagePlane);messagePlane.geometry.dispose();messagePlane.material.map?.dispose();messagePlane.material.dispose();}
+ const c=document.createElement("canvas");c.width=768;c.height=160;const ctx=c.getContext("2d");ctx.clearRect(0,0,c.width,c.height);ctx.fillStyle="#fff7e8";ctx.font="bold 48px Georgia,serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(state.message||"Merry Christmas!",384,82,730);
+ const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;messagePlane=new THREE.Mesh(new THREE.PlaneGeometry(.94,.20),new THREE.MeshBasicMaterial({map:tex,transparent:true,side:THREE.DoubleSide}));messagePlane.position.set(0,1.79,.405);cakeGroup.add(messagePlane);
+}
+const roomThemes={classic:{wall:"#263e36",floor:"#76543d",light:"#ffcf8b",snow:false},snow:{wall:"#617a89",floor:"#8a7561",light:"#ffe5c1",snow:true},nordic:{wall:"#d8d0bd",floor:"#ad9477",light:"#fff0d2",snow:false},party:{wall:"#641f2b",floor:"#53352d",light:"#ffce7b",snow:false},night:{wall:"#101d3c",floor:"#343b5b",light:"#9bbdff",snow:true}};
+function buildRoom(name){
+ state.room=name;roomGroup.clear();const t=roomThemes[name]||roomThemes.classic;scene.background=new THREE.Color(t.wall);
+ const floor=new THREE.Mesh(new THREE.PlaneGeometry(200,200),material(t.floor));floor.rotation.x=-Math.PI/2;floor.position.y=-.03;floor.receiveShadow=true;roomGroup.add(floor);
+ const wall=new THREE.Mesh(new THREE.PlaneGeometry(16,9),material(t.wall));wall.position.set(0,4,-5);roomGroup.add(wall);
+ const pane=new THREE.Mesh(new THREE.PlaneGeometry(3.2,2.2),material(name==="night"?"#182e57":"#9bb8c5",.3));pane.position.set(-3,3.1,-4.92);roomGroup.add(pane);
+ const frame=material("#5a3c2d");for(const [x,y,w,h]of[[-3,4.22,3.35,.09],[-3,2,3.35,.09],[-4.62,3.1,.09,2.3],[-1.38,3.1,.09,2.3],[-3,3.1,.07,2.2],[-3,3.1,3.2,.07]]){const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,.12),frame);b.position.set(x,y,-4.82);roomGroup.add(b);}
+ const light=new THREE.PointLight(t.light,name==="night"?18:28,18);light.position.set(0,5,2);roomGroup.add(light);
+ if(["classic","party","snow"].includes(name)){const tree=new THREE.Group();const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.12,.18,.7,12),material("#68442e"));trunk.position.y=.35;tree.add(trunk);for(let i=0;i<3;i++){const cone=new THREE.Mesh(new THREE.ConeGeometry(1-i*.19,1.35,24),material("#1f6547"));cone.position.y=1+i*.75;cone.castShadow=true;tree.add(cone);}for(let i=0;i<22;i++){const a=i*2.4,r=.35+(i%6)*.1,y=.6+(i%6)*.47;const bulb=new THREE.Mesh(new THREE.SphereGeometry(.055,8,8),new THREE.MeshBasicMaterial({color:["#ffd36a","#e95b55","#6bc8d0"][i%3]}));bulb.position.set(Math.cos(a)*r,y,Math.sin(a)*r);tree.add(bulb);}tree.position.set(3,0,-2.4);roomGroup.add(tree);}
+ if(t.snow){const p=[];for(let i=0;i<250;i++)p.push((Math.random()-.5)*8,Math.random()*6+1,-4.7);const g=new THREE.BufferGeometry();g.setAttribute("position",new THREE.Float32BufferAttribute(p,3));roomGroup.add(new THREE.Points(g,new THREE.PointsMaterial({color:"#fff",size:.045})));}
+}
+function objectToData(root){return{id:root.userData.id,kind:root.userData.kind,position:root.position.toArray(),rotation:root.rotation.toArray(),scale:root.scale.toArray(),color:root.userData.color||null,text:root.userData.text||null,owner:root.userData.owner||state.name};}
+function createObject(data){
+ let root;
+ const red=material(data.color||"#c92335",.42),green=material("#347447",.65);
+ if(data.kind==="berry"){root=new THREE.Group();const berry=new THREE.Mesh(new THREE.SphereGeometry(.16,20,16),red);berry.scale.set(.85,1.15,.85);berry.position.y=.13;berry.castShadow=true;root.add(berry);const leaf=new THREE.Mesh(new THREE.ConeGeometry(.07,.16,5),green);leaf.position.y=.29;leaf.rotation.z=.3;root.add(leaf);}
+ else if(data.kind==="candle"){root=new THREE.Group();const stick=new THREE.Mesh(new THREE.CylinderGeometry(.045,.05,.55,16),material("#f5e8d0"));stick.position.y=.28;stick.castShadow=true;root.add(stick);const flame=new THREE.Mesh(new THREE.SphereGeometry(.075,12,12),new THREE.MeshBasicMaterial({color:"#ffb52e"}));flame.scale.set(.65,1.5,.65);flame.position.y=.62;root.add(flame);}
+ else if(data.kind==="plate"){root=new THREE.Mesh(new THREE.BoxGeometry(.72,.07,.4),material(data.color||state.colors.choco,.45));}
+ else if(data.kind==="star"){root=new THREE.Mesh(new THREE.ConeGeometry(.18,.35,5),material("#e9bd58",.35));}
+ else return null;
+ root.userData={id:data.id||makeId(),kind:data.kind,color:data.color||null,owner:data.owner||state.name,editable:true};
+ root.position.fromArray(data.position||[0,1.76,0]);root.rotation.fromArray(data.rotation||[0,0,0]);root.scale.fromArray(data.scale||[1,1,1]);editable.add(root);objectsById.set(root.userData.id,root);return root;
+}
+function snapshot(){return{cakeName:state.cakeName,objects:[...objectsById.values()].map(objectToData),room:state.room,flavor:state.flavor,colors:{...state.colors},message:state.message};}
+function applySnapshot(s){
+ state.applyingRemote=true;state.cakeName=s.cakeName||state.cakeName;$("#cakeNameInput").value=state.cakeName;$("#cakeTitle").textContent=state.cakeName;for(const o of [...editable.children]){editable.remove(o);dispose(o);}objectsById.clear();
+ state.room=s.room||"classic";$("#roomPreset").value=state.room;buildRoom(state.room);
+ state.flavor=s.flavor||"strawberry";$("#flavor").value=state.flavor;
+ state.colors={...state.colors,...(s.colors||{})};
+ for(const [id,mat]of[["creamColor",creamMat],["spongeColor",spongeMat],["chocoColor",chocoMat]]){const v=state.colors[id==="creamColor"?"cream":id==="spongeColor"?"sponge":"choco"];mat.color.set(v);$("#"+id).value=v;$("#"+id.replace("Color","Hex")).value=v;}
+ state.message=s.message||"";$("#messageText").value=state.message;buildCake();(s.objects||[]).forEach(createObject);state.applyingRemote=false;lastCommitted=JSON.stringify(snapshot());
+}
+function dispose(o){o.traverse?.(c=>{c.geometry?.dispose();if(Array.isArray(c.material))c.material.forEach(m=>m.dispose());else if(c.material)c.material.dispose();});}
+function selectObject(obj){selected=obj;transform.detach();if(obj){transform.attach(obj);$("#selectedLabel").textContent=(obj.userData.kind||"アイテム")+" · "+obj.userData.owner;}else $("#selectedLabel").textContent="アイテムをタップして選択";}
+transform=new TransformControls(camera,renderer.domElement);transform.setMode("translate");transform.setSpace("world");transform.addEventListener("dragging-changed",e=>{controls.enabled=!e.value;if(!e.value&&selected)commit("アイテムを移動");});transform.addEventListener("objectChange",()=>{});scene.add(transform.getHelper());
+function commit(action){
+ if(state.applyingRemote)return;
+ if(lastCommitted){state.history.push(lastCommitted);if(state.history.length>60)state.history.shift();}
+ lastCommitted=JSON.stringify(snapshot());state.future=[];refreshUndo();log(action);saveLocal();publishState();
+}
+function refreshUndo(){$("#undoBtn").disabled=!state.history.length;$("#redoBtn").disabled=!state.future.length;}
+function restoreFromJson(s){applySnapshot(JSON.parse(s));}
+function undo(){if(!state.history.length)return;state.future.push(JSON.stringify(snapshot()));const prev=state.history.pop();restoreFromJson(prev);lastCommitted=JSON.stringify(snapshot());refreshUndo();log("操作を取り消し");saveLocal();publishState();}
+function redo(){if(!state.future.length)return;state.history.push(JSON.stringify(snapshot()));const next=state.future.pop();restoreFromJson(next);lastCommitted=JSON.stringify(snapshot());refreshUndo();log("操作をやり直し");saveLocal();publishState();}
+function log(action){const list=$("#history");if(list.querySelector(".hint"))list.innerHTML="";const d=document.createElement("div");d.className="historyItem";const t=document.createElement("time");t.textContent=new Date().toLocaleString("ja-JP");d.append(document.createTextNode(`${state.name||"ゲスト"}：${action}`),t);list.prepend(d);while(list.children.length>40)list.lastElementChild.remove();}
+let toastTimer;function toast(s){const el=$("#toast");el.textContent=s;el.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove("show"),2200);}
+function add(kind){const pos=[(Math.random()-.5)*1.4,1.77,(Math.random()-.5)*1.2];const o=createObject({id:makeId(),kind,position:pos,owner:state.name,color:kind==="plate"?state.colors.choco:null});selectObject(o);commit(kind==="berry"?"イチゴを追加":kind==="candle"?"ろうそくを追加":"チョコプレートを追加");}
+function setColor(which,value){if(!/^#[0-9a-fA-F]{6}$/.test(value))return;state.colors[which]=value;({cream:creamMat,sponge:spongeMat,choco:chocoMat})[which].color.set(value);if(which==="choco"&&selected?.userData.kind==="plate")selected.material.color.set(value);commit("色を変更");}
+function bindColor(which){const c=$("#"+which+"Color"),h=$("#"+which+"Hex");c.addEventListener("change",()=>{h.value=c.value;setColor(which,c.value);});h.addEventListener("change",()=>{if(/^#[0-9a-fA-F]{6}$/.test(h.value)){c.value=h.value;setColor(which,h.value);}else h.value=c.value;});}
+["cream","sponge","choco"].forEach(bindColor);
+$("#flavor").addEventListener("change",e=>{const p={strawberry:["#fff0e8","#e9bd82","#6b382c"],chocolate:["#75452f","#b77a4c","#3d211c"],matcha:["#9caf76","#dfc79c","#51412c"],blueberry:["#c4a5d4","#e7c7a6","#50355e"]}[e.target.value];if(!p)return;state.flavor=e.target.value;["cream","sponge","choco"].forEach((k,i)=>{$("#"+k+"Color").value=p[i];$("#"+k+"Hex").value=p[i];state.colors[k]=p[i];({cream:creamMat,sponge:spongeMat,choco:chocoMat})[k].color.set(p[i]);});commit("ケーキの味を変更");});
+$("#roomPreset").addEventListener("change",e=>{buildRoom(e.target.value);commit("部屋の背景を変更");});
+$("#updateMessage").addEventListener("click",()=>{state.message=$("#messageText").value.trim().slice(0,28);updateMessageMesh();commit("メッセージを変更");});
+$("#addBerry").onclick=()=>add("berry");$("#addCandle").onclick=()=>add("candle");$("#addPlate").onclick=()=>add("plate");
+$("#undoBtn").onclick=undo;$("#redoBtn").onclick=redo;
+$("#deleteBtn").onclick=()=>{if(!selected)return toast("削除するアイテムを選択してください");const id=selected.userData.id;editable.remove(selected);objectsById.delete(id);dispose(selected);selectObject(null);commit("アイテムを削除");};
+$("#moveBtn").onclick=()=>{transform.setMode("translate");toast("移動モード");};$("#rotateBtn").onclick=()=>{transform.setMode("rotate");toast("回転モード");};$("#scaleBtn").onclick=()=>{transform.setMode("scale");toast("サイズ変更モード");};
+$("#nudgeLeft").onclick=()=>nudge(-.12,0);$("#nudgeRight").onclick=()=>nudge(.12,0);$("#nudgeFront").onclick=()=>nudge(0,.12);$("#nudgeBack").onclick=()=>nudge(0,-.12);
+function nudge(x,z){if(!selected)return toast("アイテムを選択してください");selected.position.x+=x;selected.position.z+=z;commit("アイテムを移動");}
+$("#resetView").onclick=()=>{camera.position.set(5.8,4.5,7.4);controls.target.set(0,1.15,0);controls.update();};
+$("#setCakeName").onclick=()=>{const v=$("#cakeNameInput").value.trim().slice(0,48);if(!v)return toast("ケーキ名を入力してください");state.cakeName=v;$("#cakeTitle").textContent=v;commit("ケーキ名を変更");};
+$("#shareBtn").onclick=async()=>{const u=new URL(location.href);u.searchParams.set("cake",state.cakeId);try{await navigator.clipboard.writeText(u.toString());toast("共有リンクをコピーしました");}catch{prompt("このリンクをコピーしてください",u.toString());}};
+function onPick(e){const r=canvas.getBoundingClientRect();pointer.x=((e.clientX-r.left)/r.width)*2-1;pointer.y=-((e.clientY-r.top)/r.height)*2+1;raycaster.setFromCamera(pointer,camera);const hits=raycaster.intersectObjects(editable.children,true);if(!hits.length){if(!transform.axis)selectObject(null);return;}let root=hits[0].object;while(root.parent&&root.parent!==editable)root=root.parent;selectObject(root);}
+canvas.addEventListener("pointerdown",e=>{pointerDown={x:e.clientX,y:e.clientY};});
+canvas.addEventListener("pointerup",e=>{if(pointerDown&&Math.hypot(e.clientX-pointerDown.x,e.clientY-pointerDown.y)<8&&!transform.dragging)onPick(e);pointerDown=null;});
+canvas.addEventListener("dblclick",()=>{if(selected){transform.setMode("translate");toast("選択中のアイテムを移動できます");}});
+function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
+new ResizeObserver(resize).observe(canvas);
+function saveLocal(){try{localStorage.setItem("cakeShare:"+state.cakeId,JSON.stringify(snapshot()));}catch(e){console.warn("local save failed",e);}}
+function loadLocal(){try{const s=localStorage.getItem("cakeShare:"+state.cakeId);if(s)applySnapshot(JSON.parse(s));}catch(e){console.warn("local data invalid",e);}}
+const urlParams=new URLSearchParams(location.search);if(!urlParams.has("cake")){state.cakeId=makeId().replaceAll("-","").slice(0,16);const u=new URL(location.href);u.searchParams.set("cake",state.cakeId);history.replaceState({}, "",u);}
+loadLocal();lastCommitted=JSON.stringify(snapshot());$("#cakeNameInput").value=state.cakeName;$("#cakeTitle").textContent=state.cakeName;buildRoom(state.room);buildCake();resize();
+function animate(){renderer.setAnimationLoop(()=>{controls.update();renderer.render(scene,camera);});}animate();
 
-    <div class="workspace">
-      <section class="stage-card">
-        <div class="stage-head"><strong>3Dケーキエディター</strong><small>ドラッグで視点を回転 · ピンチで拡大</small></div>
-        <canvas id="stage" aria-label="3Dケーキ編集画面"></canvas>
-        <div class="stage-tools">
-          <button class="toolbtn" id="resetView">視点リセット</button>
-          <button class="toolbtn" id="addBerry">🍓 イチゴ追加</button>
-          <button class="toolbtn" id="addCandle">🕯️ ろうそく追加</button>
-          <button class="toolbtn" id="addPlate">💌 プレート追加</button>
-          <button class="toolbtn" id="removeSelected">選択を削除</button>
-        </div>
-      </section>
+/* Custom Cardboard stereo mode: side-by-side eye cameras with gyro-controlled head pose.
+   For production-grade optical distortion, add per-device lens calibration. */
+let cardboard=false,gyroEnabled=false,deviceOrientation=null,orientationHandler=null,baseAlpha=0,baseBeta=0,baseGamma=0;
+const normalRender=renderer.render.bind(renderer);
+function orientationToQuaternion(alpha,beta,gamma){const e=new THREE.Euler(THREE.MathUtils.degToRad(beta),THREE.MathUtils.degToRad(alpha),-THREE.MathUtils.degToRad(gamma),"YXZ");const q=new THREE.Quaternion().setFromEuler(e);q.multiply(new THREE.Quaternion(-Math.sqrt(.5),0,0,Math.sqrt(.5)));return q;}
+async function enableGyro(){if(typeof DeviceOrientationEvent==="undefined"){toast("この端末ではジャイロを利用できません");return false;}try{if(typeof DeviceOrientationEvent.requestPermission==="function"){const p=await DeviceOrientationEvent.requestPermission();if(p!=="granted"){toast("モーションセンサーの許可が必要です");return false;}}orientationHandler=e=>{if(e.alpha==null)return;deviceOrientation=e;};window.addEventListener("deviceorientation",orientationHandler,true);gyroEnabled=true;toast("ジャイロを有効にしました");return true;}catch(e){toast("ジャイロを開始できませんでした");return false;}}
+function disableGyro(){if(orientationHandler)window.removeEventListener("deviceorientation",orientationHandler,true);orientationHandler=null;gyroEnabled=false;deviceOrientation=null;}
+function renderCardboard(){
+ const w=renderer.domElement.width,h=renderer.domElement.height,half=Math.floor(w/2);const eyeSep=.064;
+ const q=deviceOrientation?orientationToQuaternion(deviceOrientation.alpha||0,deviceOrientation.beta||0,deviceOrientation.gamma||0):null;
+ const forward=new THREE.Vector3(0,0,-1);if(q)forward.applyQuaternion(q);
+ const target=new THREE.Vector3().copy(camera.position).add(forward.multiplyScalar(5));
+ const left=new THREE.PerspectiveCamera(camera.fov,half/h,camera.near,camera.far),right=left.clone();
+ left.position.copy(camera.position).add(new THREE.Vector3(-eyeSep/2,0,0));right.position.copy(camera.position).add(new THREE.Vector3(eyeSep/2,0,0));
+ if(q){left.quaternion.copy(q);right.quaternion.copy(q);left.position.set(0,1.65,4);right.position.set(.064,1.65,4);left.lookAt(target);right.lookAt(target);}
+ else{left.copy(camera);right.copy(camera);left.position.add(new THREE.Vector3(-eyeSep/2,0,0));right.position.add(new THREE.Vector3(eyeSep/2,0,0));}
+ renderer.setScissorTest(true);renderer.setViewport(0,0,half,h);renderer.setScissor(0,0,half,h);renderer.render(scene,left);
+ renderer.setViewport(half,0,w-half,h);renderer.setScissor(half,0,w-half,h);renderer.render(scene,right);renderer.setScissorTest(false);renderer.setViewport(0,0,w,h);
+}
+$("#vrBtn").onclick=async()=>{if(!cardboard){const ok=await enableGyro();if(!ok&&typeof DeviceOrientationEvent!=="undefined")return;cardboard=true;$("#vrBtn").classList.add("active");$("#vrBtn").textContent="VR終了";toast("Cardboard表示中。横向きでゴーグルに装着してください");}else{cardboard=false;disableGyro();$("#vrBtn").classList.remove("active");$("#vrBtn").textContent="🥽 Cardboard";}};
+$("#webxrBtn").onclick=async()=>{if(!("xr"in navigator)){toast("このブラウザはWebXRに対応していません。Cardboardを利用してください");return;}try{const supported=await navigator.xr.isSessionSupported("immersive-vr");if(!supported){toast("VRセッション非対応です");return;}const session=await navigator.xr.requestSession("immersive-vr",{optionalFeatures:["local-floor","bounded-floor"]});renderer.xr.setReferenceSpaceType("local-floor");await renderer.xr.setSession(session);toast("WebXR VRを開始しました");session.addEventListener("end",()=>toast("VRを終了しました"));}catch(e){toast("WebXRを開始できませんでした");console.warn(e);}};
+const originalLoop=renderer.setAnimationLoop.bind(renderer);
+renderer.setAnimationLoop(()=>{controls.update();if(cardboard&&!renderer.xr.isPresenting)renderCardboard();else renderer.render(scene,camera);});
 
-      <aside class="panel">
-        <section class="section">
-          <h2>🎄 お部屋</h2>
-          <div class="field"><label for="roomPreset">背景テーマ</label>
-            <select id="roomPreset">
-              <option value="classic">クラシックリビング</option>
-              <option value="snow">雪降る山小屋</option>
-              <option value="nordic">北欧クリスマス</option>
-              <option value="party">クリスマスパーティー</option>
-              <option value="night">星空のクリスマス</option>
-            </select>
-          </div>
-        </section>
+/* Supabase optional adapter. Paste Project URL + anon/publishable key.
+   Required SQL is included in the accompanying setup notes / code comments. */
+let supabaseClient=null;
+async function connectSupabase(){
+ const url=$("#supabaseUrl").value.trim(),key=$("#supabaseKey").value.trim();if(!url||!key){toast("Project URLと公開キーを入力してください");return;}
+ try{
+  const {createClient}=await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
+  supabaseClient=createClient(url,key);state.db=supabaseClient;
+  const table="cake_share_states";
+  const {data,error}=await supabaseClient.from(table).select("state").eq("cake_id",state.cakeId).maybeSingle();
+  if(error)throw error;if(data?.state)applySnapshot(data.state);
+  state.channel=supabaseClient.channel("cake:"+state.cakeId).on("postgres_changes",{event:"*",schema:"public",table,filter:"cake_id=eq."+state.cakeId},payload=>{if(payload.new?.state){applySnapshot(payload.new.state);log("ほかの参加者の変更を同期");}}).subscribe();
+  $("#connectionLabel").textContent="SUPABASE CONNECTED";$("#dbStatus").textContent="接続済み。共有データの同期を開始しました。";toast("Supabaseに接続しました");
+ }catch(e){console.error(e);state.db=null;$("#connectionLabel").textContent="LOCAL / OFFLINE";$("#dbStatus").textContent="接続できませんでした。ローカルモードで続行します。";toast("接続失敗。ローカルモードで続行します");}
+}
+async function publishState(){
+ if(!supabaseClient)return;
+ try{
+  const {error}=await supabaseClient.from("cake_share_states").upsert({cake_id:state.cakeId,state:snapshot(),updated_by:state.name,updated_at:new Date().toISOString()},{onConflict:"cake_id"});if(error)throw error;
+ }catch(e){console.warn("sync failed",e);$("#connectionLabel").textContent="LOCAL / SYNC ERROR";}
+}
+$("#connectBtn").onclick=connectSupabase;$("#localBtn").onclick=()=>{supabaseClient=null;state.db=null;if(state.channel){state.channel.unsubscribe();state.channel=null;}$("#connectionLabel").textContent="OFFLINE / LOCAL";$("#dbStatus").textContent="ローカルモード。変更はこの端末に保存されます。";toast("ローカルモードに切り替えました");};
 
-        <section class="section">
-          <h2>🍰 ケーキの味・色</h2>
-          <div class="field"><label for="flavor">味のプリセット</label>
-            <select id="flavor">
-              <option value="strawberry">ストロベリー</option>
-              <option value="chocolate">チョコレート</option>
-              <option value="matcha">抹茶</option>
-              <option value="blueberry">ブルーベリー</option>
-              <option value="custom">カスタム</option>
-            </select>
-          </div>
-          <div class="field"><label>クリーム RGB / HEX</label>
-            <div class="color-row"><input id="creamColor" type="color" value="#fff0e8"><input id="creamHex" type="text" value="#fff0e8" maxlength="7" aria-label="クリームのHEXカラー"></div>
-          </div>
-          <div class="field"><label>スポンジ RGB / HEX</label>
-            <div class="color-row"><input id="spongeColor" type="color" value="#e9bd82"><input id="spongeHex" type="text" value="#e9bd82" maxlength="7" aria-label="スポンジのHEXカラー"></div>
-          </div>
-          <div class="field"><label>メッセージチョコ RGB / HEX</label>
-            <div class="color-row"><input id="chocoColor" type="color" value="#6b382c"><input id="chocoHex" type="text" value="#6b382c" maxlength="7" aria-label="メッセージチョコのHEXカラー"></div>
-          </div>
-        </section>
-
-        <section class="section">
-          <h2>💌 メッセージ</h2>
-          <div class="field"><label for="messageText">プレートに表示する文字</label><input id="messageText" type="text" maxlength="24" placeholder="Merry Christmas!"></div>
-          <button class="secondary" id="updateMessage">文字を反映</button>
-        </section>
-
-        <section class="section history-section">
-          <h2>📝 編集履歴</h2>
-          <div class="history" id="history"><div class="empty">編集すると、ここに履歴が表示されます。</div></div>
-          <div class="notice">この試作版の履歴は、この端末内だけに保存されます。複数人での共有・同期は次の開発段階でSupabaseに接続します。</div>
-        </section>
-      </aside>
-    </div>
-  </main>
-
-  <div class="modal-backdrop" id="nameModal">
-    <form class="modal" id="nameForm">
-      <div class="modal-mark">🎄🎂</div>
-      <h2>ケーキ作りに参加しよう！</h2>
-      <p>編集を始める前に、みんなに表示する名前を入力してください。<br>本名でなく、ニックネームでもOK。</p>
-      <div class="field"><label for="displayName">あなたの名前</label><input id="displayName" type="text" maxlength="20" placeholder="例：サンタさん" autocomplete="nickname" required></div>
-      <button class="primary" type="submit">この名前で参加する</button>
-    </form>
-  </div>
-  <div class="toast" id="toast" role="status"></div>
-
-  <script type="module">
-    import * as THREE from "three";
-    import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-
-    const canvas = document.querySelector("#stage");
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.7));
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.12;
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
-    camera.position.set(5.8, 4.5, 7.4);
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.target.set(0, 1.15, 0);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.06;
-    controls.minDistance = 4;
-    controls.maxDistance = 13;
-    controls.maxPolarAngle = Math.PI * 0.49;
-
-    scene.add(new THREE.HemisphereLight(0xffe9d1, 0x584333, 2.0));
-    const keyLight = new THREE.DirectionalLight(0xffe4bd, 3.0);
-    keyLight.position.set(-4, 8, 5); keyLight.castShadow = true;
-    keyLight.shadow.mapSize.set(1024,1024); scene.add(keyLight);
-    const fillLight = new THREE.PointLight(0xffc66e, 35, 16);
-    fillLight.position.set(4,3,2); scene.add(fillLight);
-
-    const cakeGroup = new THREE.Group(); scene.add(cakeGroup);
-    const roomGroup = new THREE.Group(); scene.add(roomGroup);
-    const decorGroup = new THREE.Group(); cakeGroup.add(decorGroup);
-    const material = (color, roughness=.72) => new THREE.MeshStandardMaterial({ color, roughness });
-    let creamMat = material("#fff0e8"), spongeMat = material("#e9bd82"), chocolateMat = material("#6b382c");
-    let selected = null;
-    const raycaster = new THREE.Raycaster();
-    const pointer = new THREE.Vector2();
-    const editableObjects = [];
-
-    function cylinder(radiusTop, radiusBottom, height, mat, y, segments=64) {
-      const mesh = new THREE.Mesh(new THREE.CylinderGeometry(radiusTop,radiusBottom,height,segments),mat);
-      mesh.position.y=y; mesh.castShadow=true; mesh.receiveShadow=true; cakeGroup.add(mesh); return mesh;
-    }
-    const table = new THREE.Mesh(new THREE.CylinderGeometry(4.1,4.1,.22,64), material("#76513a"));
-    table.position.y=.12; table.receiveShadow=true; table.castShadow=true; scene.add(table);
-    const tableLeg = new THREE.Mesh(new THREE.CylinderGeometry(.12,.18,1.5,24),material("#513727"));
-    tableLeg.position.y=-.72; scene.add(tableLeg);
-    let plate;
-    function buildCake() {
-      [...cakeGroup.children].forEach(o => { if(o !== decorGroup) { cakeGroup.remove(o); disposeObject(o); } });
-      cylinder(1.55,1.62,.48,spongeMat,.62);
-      cylinder(1.58,1.58,.13,creamMat,.93);
-      cylinder(1.34,1.4,.43,spongeMat,1.2);
-      cylinder(1.38,1.38,.13,creamMat,1.48);
-      cylinder(1.39,1.39,.09,creamMat,1.58);
-      // Cream swirls around the upper edge
-      for(let i=0;i<12;i++){
-        const a=i*Math.PI*2/12, r=1.18;
-        const dollop=new THREE.Mesh(new THREE.SphereGeometry(.16,18,14),creamMat);
-        dollop.position.set(Math.cos(a)*r,1.68,Math.sin(a)*r);
-        dollop.scale.set(1,1.15,1); dollop.castShadow=true; cakeGroup.add(dollop);
-      }
-      // Front-facing chocolate message plate
-      plate = new THREE.Mesh(new THREE.BoxGeometry(1.05,.08,.48),chocolateMat);
-      plate.position.set(0,1.73,.15); plate.rotation.x=-.12; plate.castShadow=true; cakeGroup.add(plate);
-      addMessageText();
-    }
-    let messageMesh;
-    function addMessageText() {
-      if(messageMesh){ cakeGroup.remove(messageMesh); disposeObject(messageMesh); }
-      const text=document.querySelector("#messageText").value.trim() || "Merry Christmas!";
-      const canvasText=document.createElement("canvas"); canvasText.width=512; canvasText.height=128;
-      const ctx=canvasText.getContext("2d");
-      ctx.clearRect(0,0,512,128); ctx.fillStyle="#fff7e8"; ctx.font="bold 46px Georgia, serif";
-      ctx.textAlign="center"; ctx.textBaseline="middle"; ctx.fillText(text,256,66,480);
-      const tex=new THREE.CanvasTexture(canvasText); tex.colorSpace=THREE.SRGBColorSpace;
-      const mat=new THREE.MeshBasicMaterial({map:tex,transparent:true,side:THREE.DoubleSide});
-      messageMesh=new THREE.Mesh(new THREE.PlaneGeometry(.88,.22),mat);
-      messageMesh.position.set(0,1.78,.405); cakeGroup.add(messageMesh);
-    }
-    function disposeObject(obj) {
-      obj.traverse?.(child=>{ child.geometry?.dispose(); if(Array.isArray(child.material)) child.material.forEach(m=>m.dispose()); else child.material?.dispose(); });
-      obj.geometry?.dispose(); if(obj.material && !Array.isArray(obj.material)) obj.material.dispose();
-    }
-    function addDecoration(type) {
-      let obj;
-      if(type==="berry") {
-        obj=new THREE.Group();
-        const berry=new THREE.Mesh(new THREE.SphereGeometry(.16,20,16),material("#c92335",.4));
-        berry.scale.set(.85,1.15,.85); berry.position.y=.13; berry.castShadow=true; obj.add(berry);
-        const leaf=new THREE.Mesh(new THREE.ConeGeometry(.07,.16,5),material("#347447"));
-        leaf.position.y=.29; leaf.rotation.z=.3; obj.add(leaf);
-        obj.position.set((Math.random()-.5)*1.5,1.77,(Math.random()-.5)*1.3);
-      } else if(type==="candle") {
-        obj=new THREE.Group();
-        const stick=new THREE.Mesh(new THREE.CylinderGeometry(.045,.05,.55,16),material("#f5e8d0"));
-        stick.position.y=.28; stick.castShadow=true; obj.add(stick);
-        const flame=new THREE.Mesh(new THREE.SphereGeometry(.075,12,12),new THREE.MeshBasicMaterial({color:"#ffb52e"}));
-        flame.scale.set(.65,1.5,.65); flame.position.y=.62; obj.add(flame);
-        obj.position.set((Math.random()-.5)*1.2,1.72,(Math.random()-.5)*1.1);
-      } else if(type==="plate") {
-        obj=new THREE.Mesh(new THREE.BoxGeometry(.7,.07,.38),chocolateMat.clone());
-        obj.position.set((Math.random()-.5)*.8,1.72,(Math.random()-.5)*.8);
-      }
-      if(!obj) return;
-      obj.userData.editable=true; obj.userData.kind=type; decorGroup.add(obj); editableObjects.push(obj); selected=obj;
-      logAction(type==="berry"?"イチゴを追加":type==="candle"?"ろうそくを追加":"チョコプレートを追加");
-    }
-
-    const roomThemes = {
-      classic:{wall:"#263e36",floor:"#76543d",light:"#ffcf8b",snow:false},
-      snow:{wall:"#617a89",floor:"#8a7561",light:"#ffe5c1",snow:true},
-      nordic:{wall:"#d8d0bd",floor:"#ad9477",light:"#fff0d2",snow:false},
-      party:{wall:"#641f2b",floor:"#53352d",light:"#ffce7b",snow:false},
-      night:{wall:"#101d3c",floor:"#343b5b",light:"#9bbdff",snow:true}
-    };
-    function buildRoom(themeName) {
-      while(roomGroup.children.length){const o=roomGroup.children.pop(); disposeObject(o);}
-      const t=roomThemes[themeName] || roomThemes.classic;
-      scene.background=new THREE.Color(t.wall);
-      const floor=new THREE.Mesh(new THREE.PlaneGeometry(200,200),material(t.floor));
-      floor.rotation.x=-Math.PI/2; floor.position.y=-.02; floor.receiveShadow=true; roomGroup.add(floor);
-      const backWall=new THREE.Mesh(new THREE.PlaneGeometry(16,9),material(t.wall));
-      backWall.position.set(0,4,-5); roomGroup.add(backWall);
-      // Window frame and snowy view
-      const windowMat=material(themeName==="night"?"#182e57":"#9bb8c5",.3);
-      const windowPane=new THREE.Mesh(new THREE.PlaneGeometry(3.2,2.2),windowMat);
-      windowPane.position.set(-3,3.1,-4.92); roomGroup.add(windowPane);
-      const frameMat=material("#5a3c2d");
-      for(const [x,y,w,h] of [[-3,4.22,3.35,.09],[-3,2,3.35,.09],[-4.62,3.1,.09,2.3],[-1.38,3.1,.09,2.3],[-3,3.1,.07,2.2],[-3,3.1,3.2,.07]]){
-        const bar=new THREE.Mesh(new THREE.BoxGeometry(w,h,.12),frameMat); bar.position.set(x,y,-4.82); roomGroup.add(bar);
-      }
-      const roomLight=new THREE.PointLight(t.light,themeName==="night"?18:28,18); roomLight.position.set(0,5,2); roomGroup.add(roomLight);
-      if(themeName==="classic"||themeName==="party"||themeName==="snow"){
-        const tree=new THREE.Group();
-        const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.12,.18,.7,12),material("#68442e")); trunk.position.y=.35; tree.add(trunk);
-        for(let i=0;i<3;i++){const cone=new THREE.Mesh(new THREE.ConeGeometry(1.0-i*.19,1.35,24),material("#1f6547"));cone.position.y=1.0+i*.75;cone.castShadow=true;tree.add(cone);}
-        for(let i=0;i<18;i++){const a=i*2.4,r=.35+(i%6)*.1,y=.6+(i%6)*.47;const bulb=new THREE.Mesh(new THREE.SphereGeometry(.055,8,8),new THREE.MeshBasicMaterial({color:["#ffd36a","#e95b55","#6bc8d0"][i%3]}));bulb.position.set(Math.cos(a)*r,y,Math.sin(a)*r);tree.add(bulb);}
-        tree.position.set(3.0,0,-2.4); roomGroup.add(tree);
-      }
-      if(t.snow){
-        const points=[];
-        for(let i=0;i<260;i++) points.push((Math.random()-.5)*8,Math.random()*6+1,-4.65+(Math.random()-.5)*.1);
-        const geo=new THREE.BufferGeometry(); geo.setAttribute("position",new THREE.Float32BufferAttribute(points,3));
-        const flakes=new THREE.Points(geo,new THREE.PointsMaterial({color:"#fff",size:.045,transparent:true,opacity:.85}));
-        roomGroup.add(flakes);
-      }
-    }
-
-    function setColor(inputId, mat, hexId) {
-      const value=document.getElementById(inputId).value;
-      mat.color.set(value);
-      document.getElementById(hexId).value=value;
-    }
-    function bindColor(colorId,hexId,mat) {
-      const c=document.getElementById(colorId), h=document.getElementById(hexId);
-      c.addEventListener("input",()=>{mat.color.set(c.value);h.value=c.value;logAction("色を変更");});
-      h.addEventListener("change",()=>{if(/^#[0-9a-fA-F]{6}$/.test(h.value)){c.value=h.value;mat.color.set(h.value);logAction("色を変更");}else h.value=c.value;});
-    }
-    bindColor("creamColor","creamHex",creamMat);
-    bindColor("spongeColor","spongeHex",spongeMat);
-    bindColor("chocoColor","chocoHex",chocolateMat);
-
-    document.querySelector("#flavor").addEventListener("change",e=>{
-      const presets={strawberry:["#fff0e8","#e9bd82","#6b382c"],chocolate:["#75452f","#b77a4c","#3d211c"],matcha:["#9caf76","#dfc79c","#51412c"],blueberry:["#c4a5d4","#e7c7a6","#50355e"]};
-      if(!presets[e.target.value]) return;
-      ["creamColor","spongeColor","chocoColor"].forEach((id,i)=>{document.getElementById(id).value=presets[e.target.value][i];document.getElementById(id).dispatchEvent(new Event("input"));});
-      buildCake(); logAction("ケーキの味を変更");
-    });
-    document.querySelector("#roomPreset").addEventListener("change",e=>{buildRoom(e.target.value);logAction("部屋の背景を変更");});
-    document.querySelector("#updateMessage").addEventListener("click",()=>{addMessageText();logAction("メッセージを変更");});
-    document.querySelector("#addBerry").addEventListener("click",()=>addDecoration("berry"));
-    document.querySelector("#addCandle").addEventListener("click",()=>addDecoration("candle"));
-    document.querySelector("#addPlate").addEventListener("click",()=>addDecoration("plate"));
-    document.querySelector("#resetView").addEventListener("click",()=>{camera.position.set(5.8,4.5,7.4);controls.target.set(0,1.15,0);controls.update();});
-    document.querySelector("#removeSelected").addEventListener("click",()=>{
-      if(!selected){toast("削除するアイテムを選択してください");return;}
-      decorGroup.remove(selected); const i=editableObjects.indexOf(selected); if(i>=0)editableObjects.splice(i,1);
-      disposeObject(selected); selected=null; logAction("アイテムを削除");
-    });
-
-    function logAction(action) {
-      const name=sessionStorage.getItem("cakeShareName") || "ゲスト";
-      const list=document.querySelector("#history");
-      if(list.querySelector(".empty")) list.innerHTML="";
-      const item=document.createElement("div"); item.className="history-item";
-      const icon=document.createElement("span");icon.textContent="✦";
-      const body=document.createElement("div");body.textContent=`${name}：${action}`;
-      const time=document.createElement("time");time.textContent=new Date().toLocaleTimeString("ja-JP",{hour:"2-digit",minute:"2-digit"});
-      body.append(time);item.append(icon,body);list.prepend(item);
-      while(list.children.length>30)list.lastElementChild.remove();
-    }
-    let toastTimer;
-    function toast(msg){const el=document.querySelector("#toast");el.textContent=msg;el.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove("show"),2200);}
-
-    // Require a display name before enabling editing.
-    const modal=document.querySelector("#nameModal");
-    document.querySelector("#nameForm").addEventListener("submit",e=>{
-      e.preventDefault();const name=document.querySelector("#displayName").value.trim();
-      if(!name){return;}
-      sessionStorage.setItem("cakeShareName",name);
-      document.querySelector("#currentName").textContent=name;
-      modal.classList.add("hidden");
-      logAction("編集に参加");
-    });
-    const remembered=sessionStorage.getItem("cakeShareName");
-    if(remembered){document.querySelector("#currentName").textContent=remembered;modal.classList.add("hidden");}
-
-    // Tap an object to select it; drag the scene to orbit the camera.
-    canvas.addEventListener("pointerdown",e=>{
-      const rect=canvas.getBoundingClientRect();pointer.x=((e.clientX-rect.left)/rect.width)*2-1;pointer.y=-((e.clientY-rect.top)/rect.height)*2+1;
-      raycaster.setFromCamera(pointer,camera);
-      const hits=raycaster.intersectObjects(decorGroup.children,true);
-      selected=hits.length?hits[0].object:null;
-      if(selected){let root=selected;while(root.parent&&root.parent!==decorGroup)root=root.parent;selected=root;toast("アイテムを選択しました。削除ボタンで削除できます。");}
-    });
-
-    function resize(){
-      const w=canvas.clientWidth,h=canvas.clientHeight;
-      renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
-    }
-    new ResizeObserver(resize).observe(canvas);
-    buildCake();buildRoom("classic");resize();
-    function animate(){requestAnimationFrame(animate);controls.update();renderer.render(scene,camera);}
-    animate();
-  </script>
+/* Name gate */
+$("#nameForm").addEventListener("submit",e=>{e.preventDefault();const name=$("#displayName").value.trim();if(!name)return;state.name=name;sessionStorage.setItem("cakeShareName",name);$("#currentName").textContent=name;$("#nameModal").classList.add("hidden");log("編集に参加");});
+const savedName=sessionStorage.getItem("cakeShareName");if(savedName){state.name=savedName;$("#currentName").textContent=savedName;$("#nameModal").classList.add("hidden");}
+if("serviceWorker"in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("./sw.js").catch(()=>{});
+</script>
 </body>
 </html>
