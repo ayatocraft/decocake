@@ -1,214 +1,1487 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#173b32">
-<meta name="description" content="みんなでひとつの3DケーキをデコレーションするCake Share">
-<title>Cake Share — みんなで作る3Dケーキ</title>
-<link rel="manifest" href="./manifest.webmanifest">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101827">
+<title>Cake Share 🎂</title>
+
 <style>
-:root{--green:#173b32;--green2:#285747;--cream:#fbf5eb;--paper:#fffdf9;--ink:#342c27;--muted:#82766d;--line:#e8ded1;--gold:#d5a64b;--safeB:env(safe-area-inset-bottom,0px)}
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--cream);color:var(--ink);font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif}body{overscroll-behavior:none}button,input,select{font:inherit}button{cursor:pointer;touch-action:manipulation}button:disabled{opacity:.4;cursor:not-allowed}
-.topbar{height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:var(--green);color:#fff;position:relative;z-index:3}.brand{font-weight:850;font-size:19px}.brand span{color:#f1d69c}.status{font-size:11px;color:#dbe9df}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#e5b65a;margin-right:6px}.app{max-width:1500px;margin:auto;padding:14px}.heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:3px 2px 12px}h1{font-size:clamp(19px,3vw,27px);margin:0 0 3px}.sub{font-size:12px;color:var(--muted)}.chip{background:#fff;border:1px solid var(--line);border-radius:99px;padding:8px 12px;font-size:11px;white-space:nowrap}
-.layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:13px;align-items:start}.stage-card,.panel{background:var(--paper);border:1px solid var(--line);border-radius:17px;overflow:hidden;box-shadow:0 8px 28px #49351c12}.stage-head{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--line);font-size:12px}.stage-head small{color:var(--muted)}#stage{width:100%;height:min(65vh,680px);min-height:360px;display:block;touch-action:none;background:#263e36;outline:none}.stage-tools{display:flex;gap:7px;flex-wrap:wrap;padding:10px;border-top:1px solid var(--line)}.btn{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:10px;padding:9px 11px;font-size:11px;font-weight:700}.btn.primary{background:var(--green);color:#fff;border-color:var(--green)}.btn.active{border-color:var(--green);background:#e8f0e9}.panel{padding:13px;display:flex;flex-direction:column;gap:14px}.section h2{font-size:13px;margin:0 0 8px}.field{display:flex;flex-direction:column;gap:5px;margin:7px 0}label{font-size:10px;color:var(--muted);font-weight:700}input[type=text],input[type=password],select{width:100%;min-width:0;border:1px solid var(--line);border-radius:9px;padding:9px;background:#fff;color:var(--ink);font-size:12px}input[type=color]{width:40px;height:34px;border:1px solid var(--line);border-radius:8px;background:#fff;padding:2px}.colorline{display:flex;gap:7px;align-items:center}.colorline input[type=text]{flex:1}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.hint{font-size:10px;color:var(--muted);line-height:1.5}.history{max-height:180px;overflow:auto;display:flex;flex-direction:column;gap:6px}.historyItem{padding:7px 8px;background:#f7f1e8;border-radius:8px;font-size:10px;line-height:1.45}.historyItem time{display:block;color:var(--muted);font-size:9px}.row{display:flex;gap:7px;align-items:center}.row>*{min-width:0}.modalback{position:fixed;inset:0;background:#10251fd9;z-index:20;display:grid;place-items:center;padding:18px}.modal{width:min(100%,410px);background:var(--paper);border-radius:20px;padding:22px;box-shadow:0 20px 70px #0005}.modal h2{text-align:center;font-size:21px;margin:5px 0}.modal p{text-align:center;font-size:12px;line-height:1.6;color:var(--muted);margin:5px 0 15px}.modal .btn{width:100%;padding:12px}.hidden{display:none!important}.toast{position:fixed;bottom:calc(14px + var(--safeB));left:50%;transform:translateX(-50%);background:#203d32;color:#fff;padding:10px 15px;border-radius:99px;font-size:11px;z-index:30;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90vw;text-align:center}.toast.show{opacity:1}.divider{height:1px;background:var(--line);margin:2px 0}
-@media(max-width:850px){.app{padding:10px}.layout{grid-template-columns:1fr}.panel{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.section.historySection,.section.supabaseSection{grid-column:1/-1}#stage{height:55svh;min-height:320px;max-height:570px}}
-@media(max-width:520px){.topbar{height:52px;padding:0 12px}.brand{font-size:17px}.status{font-size:0}.app{padding:8px}.heading{align-items:flex-start;flex-direction:column;margin:3px 2px 9px}.chip{align-self:flex-start}#stage{height:47svh;min-height:280px;max-height:460px}.stage-head{padding:9px 11px}.stage-head small{font-size:9px}.stage-tools{padding:8px;gap:5px}.stage-tools .btn{flex:1;padding:10px 5px;font-size:10px}.panel{padding:11px;gap:11px}.section h2{font-size:12px}.section.historySection,.section.supabaseSection{grid-column:1/-1}.grid3{grid-template-columns:repeat(3,1fr)}}
-@media(orientation:landscape) and (max-height:520px){.layout{grid-template-columns:minmax(0,1fr) 260px}.panel{display:flex;max-height:calc(100svh - 100px);overflow:auto}#stage{height:calc(100svh - 165px);min-height:230px}.heading{margin-bottom:7px}}
+:root {
+  color-scheme: dark;
+  --bg: #101827;
+  --panel: #1c293b;
+  --panel2: #26364b;
+  --text: #f7f4ef;
+  --muted: #aab7c8;
+  --accent: #ff8eaa;
+  --border: rgba(255,255,255,.12);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  overflow: hidden;
+}
+button, input, select {
+  font: inherit;
+}
+button {
+  border: 0;
+  border-radius: 12px;
+  padding: 11px 15px;
+  color: white;
+  background: #405675;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+button:active { transform: scale(.97); }
+button.primary { background: #e66f91; }
+button.secondary { background: #34465f; }
+button.danger { background: #a74755; }
+input, select {
+  width: 100%;
+  min-width: 0;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #101a29;
+  color: white;
+}
+label {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+  margin: 10px 0 5px;
+}
+#app {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  height: 100dvh;
+}
+#editor {
+  overflow-y: auto;
+  padding: 16px;
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  z-index: 2;
+}
+h1 { font-size: 21px; margin: 0 0 5px; }
+h2 { font-size: 14px; margin: 22px 0 8px; }
+p, small { color: var(--muted); }
+.group {
+  padding: 12px;
+  background: rgba(255,255,255,.045);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  margin-top: 10px;
+}
+.row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.row > * { flex: 1; }
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+#stage {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: #101827;
+}
+#scene {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+#topbar {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  pointer-events: none;
+}
+#topbar > * { pointer-events: auto; }
+#cakeTitle {
+  background: rgba(10,15,25,.65);
+  backdrop-filter: blur(12px);
+  padding: 9px 13px;
+  border-radius: 12px;
+  max-width: 65%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#hint {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(10,15,25,.7);
+  padding: 9px 14px;
+  border-radius: 20px;
+  color: white;
+  font-size: 12px;
+  text-align: center;
+  pointer-events: none;
+  max-width: 90%;
+}
+#vrExit {
+  display: none;
+  position: absolute;
+  z-index: 10;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,.75);
+}
+#status {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 10px;
+  overflow-wrap: anywhere;
+}
+#nameGate {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(5,10,20,.88);
+}
+#nameCard {
+  width: min(420px, 100%);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 22px;
+  border-radius: 20px;
+}
+#nameCard h1 { margin-bottom: 8px; }
+#toast {
+  position: fixed;
+  z-index: 100;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 16px;
+  background: #26364b;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s;
+}
+#toast.show { opacity: 1; }
+
+/* Cardboard: 編集UIを完全に消して映像だけにする */
+body.cardboard #editor,
+body.cardboard #topbar,
+body.cardboard #hint {
+  display: none !important;
+}
+body.cardboard #app {
+  display: block;
+}
+body.cardboard #stage {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+}
+body.cardboard #scene {
+  width: 100%;
+  height: 100%;
+}
+body.cardboard #vrExit {
+  display: block;
+}
+body.cardboard {
+  cursor: none;
+}
+
+@media (max-width: 700px) {
+  #app {
+    display: flex;
+    flex-direction: column;
+  }
+  #stage {
+    order: 1;
+    flex: 1;
+    min-height: 42dvh;
+  }
+  #editor {
+    order: 2;
+    width: 100%;
+    height: 58dvh;
+    border-right: 0;
+    border-top: 1px solid var(--border);
+    padding: 12px;
+  }
+  #topbar { top: 8px; left: 8px; right: 8px; }
+  #hint { bottom: 8px; }
+}
 </style>
-<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+
+<!-- Three.js -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+  }
+}
+</script>
 </head>
+
 <body>
-<header class="topbar"><div class="brand">🎂 Cake <span>Share</span></div><div class="status"><i class="dot"></i><span id="connectionLabel">OFFLINE / LOCAL</span></div></header>
-<main class="app">
-<div class="heading"><div><h1 id="cakeTitle">みんなのクリスマスケーキ</h1><div class="sub">3D空間で、みんなとデコレーション。</div><div class="row" style="margin-top:8px;max-width:420px"><input id="cakeNameInput" type="text" maxlength="48" value="みんなのクリスマスケーキ" aria-label="ケーキ名"><button class="btn" id="setCakeName">名前を設定</button></div></div><div class="row"><button class="btn" id="shareBtn">🔗 共有リンク</button><div class="chip">編集者：<strong id="currentName">未入力</strong></div></div></div>
-<div class="layout">
-<section class="stage-card">
-<div class="stage-head"><strong>3Dケーキエディター</strong><small>ドラッグ：視点 / アイテム選択後：移動</small></div>
-<canvas id="stage" aria-label="3Dケーキ編集キャンバス" tabindex="0"></canvas>
-<div class="stage-tools">
-<button class="btn" id="undoBtn" disabled>↶ Undo</button><button class="btn" id="redoBtn" disabled>↷ Redo</button>
-<button class="btn" id="moveBtn">↔ 移動</button><button class="btn" id="rotateBtn">⟳ 回転</button>
-<button class="btn" id="scaleBtn">＋ サイズ</button><button class="btn" id="deleteBtn">削除</button>
+<div id="nameGate">
+  <div id="nameCard">
+    <h1>🎂 Cake Share</h1>
+    <p>ケーキをデコレーションして、みんなで共有しよう。</p>
+    <label for="editorName">あなたの名前</label>
+    <input id="editorName" maxlength="24" placeholder="ニックネーム">
+    <button class="primary" id="enterButton" style="width:100%;margin-top:14px">
+      はじめる
+    </button>
+  </div>
 </div>
-<div class="stage-tools" style="border-top:0;padding-top:0">
-<button class="btn" id="resetView">視点リセット</button><button class="btn" id="addBerry">🍓 イチゴ</button><button class="btn" id="addCandle">🕯️ ろうそく</button><button class="btn" id="addPlate">💌 プレート</button><button class="btn" id="vrBtn">🥽 Cardboard</button><button class="btn" id="webxrBtn">WebXR</button>
+
+<div id="app">
+  <aside id="editor">
+    <h1>🎂 Cake Share</h1>
+    <small>みんなで作る3Dクリスマスケーキ</small>
+
+    <div class="group">
+      <label>ケーキの名前</label>
+      <input id="cakeName" maxlength="40" value="クリスマスケーキ">
+      <button id="renameButton" class="primary" style="width:100%;margin-top:8px">
+        名前を変更
+      </button>
+      <button id="shareButton" style="width:100%;margin-top:8px">
+        🔗 共有リンクをコピー
+      </button>
+    </div>
+
+    <h2>ケーキのデザイン</h2>
+    <div class="group">
+      <label>味のプリセット</label>
+      <select id="flavor">
+        <option value="strawberry">🍓 いちご</option>
+        <option value="chocolate">🍫 チョコレート</option>
+        <option value="matcha">🍵 抹茶</option>
+        <option value="blueberry">🫐 ブルーベリー</option>
+      </select>
+
+      <label>クリームの色</label>
+      <input type="color" id="creamColor" value="#fff1e8">
+
+      <label>スポンジの色</label>
+      <input type="color" id="spongeColor" value="#e9ad67">
+
+      <label>メッセージチョコの色</label>
+      <input type="color" id="chocoColor" value="#6b352d">
+
+      <label>ケーキのメッセージ</label>
+      <input id="cakeMessage" maxlength="32" placeholder="Merry Christmas!">
+      <button id="messageButton" style="width:100%;margin-top:8px">
+        メッセージを反映
+      </button>
+    </div>
+
+    <h2>デコレーション</h2>
+    <div class="group grid2">
+      <button data-add="strawberry">🍓 いちご</button>
+      <button data-add="candle">🕯️ キャンドル</button>
+      <button data-add="chocolate">🍫 チョコ</button>
+      <button data-add="star">⭐ 星</button>
+    </div>
+
+    <h2>選択中のオブジェクト</h2>
+    <div class="group">
+      <div class="grid2">
+        <button data-move="left">← 左</button>
+        <button data-move="right">右 →</button>
+        <button data-move="front">手前</button>
+        <button data-move="back">奥</button>
+        <button data-move="up">上</button>
+        <button data-move="down">下</button>
+      </div>
+      <div class="grid2" style="margin-top:8px">
+        <button id="rotateButton">↻ 回転</button>
+        <button id="deleteButton" class="danger">削除</button>
+      </div>
+      <small>オブジェクトをタップして選択できます。</small>
+    </div>
+
+    <h2>背景</h2>
+    <div class="group">
+      <select id="room">
+        <option value="classic">🎄 クリスマスの部屋</option>
+        <option value="snow">❄️ 雪の降る夜</option>
+        <option value="nordic">🪵 北欧の部屋</option>
+        <option value="party">🎉 パーティールーム</option>
+        <option value="night">🌌 星空の部屋</option>
+      </select>
+    </div>
+
+    <h2>操作</h2>
+    <div class="group grid2">
+      <button id="undoButton">↶ Undo</button>
+      <button id="redoButton">↷ Redo</button>
+      <button id="saveButton">💾 保存</button>
+      <button id="vrButton" class="primary">🥽 Cardboard</button>
+    </div>
+
+    <div class="group">
+      <button id="gyroButton" style="width:100%">📱 ジャイロ操作</button>
+      <button id="xrButton" style="width:100%;margin-top:8px">VRモード（WebXR）</button>
+    </div>
+
+    <div id="status">ローカル保存モード</div>
+  </aside>
+
+  <main id="stage">
+    <canvas id="scene"></canvas>
+    <div id="topbar">
+      <div id="cakeTitle">🎂 クリスマスケーキ</div>
+      <small>CAKE SHARE</small>
+    </div>
+    <div id="hint">ドラッグで視点移動・タップでデコレーションを選択</div>
+    <button id="vrExit">Cardboardを終了</button>
+  </main>
 </div>
-</section>
-<aside class="panel">
-<section class="section"><h2>🎄 お部屋</h2><div class="field"><label for="roomPreset">背景テーマ</label><select id="roomPreset"><option value="classic">クラシックリビング</option><option value="snow">雪降る山小屋</option><option value="nordic">北欧クリスマス</option><option value="party">クリスマスパーティー</option><option value="night">星空のクリスマス</option></select></div></section>
-<section class="section"><h2>🍰 ケーキの味・色</h2><div class="field"><label for="flavor">味のプリセット</label><select id="flavor"><option value="strawberry">ストロベリー</option><option value="chocolate">チョコレート</option><option value="matcha">抹茶</option><option value="blueberry">ブルーベリー</option><option value="custom">カスタム</option></select></div>
-<div class="field"><label>クリーム RGB / HEX</label><div class="colorline"><input id="creamColor" type="color" value="#fff0e8"><input id="creamHex" type="text" value="#fff0e8" maxlength="7"></div></div>
-<div class="field"><label>スポンジ RGB / HEX</label><div class="colorline"><input id="spongeColor" type="color" value="#e9bd82"><input id="spongeHex" type="text" value="#e9bd82" maxlength="7"></div></div>
-<div class="field"><label>メッセージチョコ RGB / HEX</label><div class="colorline"><input id="chocoColor" type="color" value="#6b382c"><input id="chocoHex" type="text" value="#6b382c" maxlength="7"></div></div></section>
-<section class="section"><h2>💌 メッセージ</h2><div class="field"><label for="messageText">プレートの文字</label><input id="messageText" type="text" maxlength="28" placeholder="Merry Christmas!"></div><button class="btn" id="updateMessage">文字を反映</button></section>
-<section class="section"><h2>選択中のアイテム</h2><div id="selectedLabel" class="hint">アイテムをタップして選択</div><div class="grid2"><button class="btn" id="nudgeLeft">← 左</button><button class="btn" id="nudgeRight">右 →</button><button class="btn" id="nudgeFront">手前</button><button class="btn" id="nudgeBack">奥</button></div></section>
-<section class="section historySection"><h2>📝 編集履歴</h2><div class="history" id="history"><div class="hint">編集すると履歴が表示されます。</div></div></section>
-<section class="section supabaseSection"><h2>☁️ Supabase 接続設定</h2><p class="hint">URLと anon key を入力すると共有モードを試せます。未入力ならローカルモードで動作します。</p><div class="field"><label for="supabaseUrl">Project URL</label><input id="supabaseUrl" type="text" placeholder="https://xxxx.supabase.co"></div><div class="field"><label for="supabaseKey">Anon / Publishable key</label><input id="supabaseKey" type="password" placeholder="公開用キーを入力"></div><div class="row"><button class="btn primary" id="connectBtn">接続</button><button class="btn" id="localBtn">ローカルモード</button></div><div class="hint" id="dbStatus">データベース未接続。変更はこの端末に保存されます。</div></section>
-</aside></div></main>
-<div class="modalback" id="nameModal"><form class="modal" id="nameForm"><div style="font-size:34px;text-align:center">🎄🎂</div><h2>ケーキ作りに参加しよう！</h2><p>編集前に表示名を入力してください。履歴にこの名前が表示されます。ニックネームがおすすめです。</p><div class="field"><label for="displayName">あなたの名前</label><input id="displayName" type="text" maxlength="20" placeholder="例：サンタさん" autocomplete="nickname" required></div><button class="btn primary" type="submit">この名前で参加する</button></form></div>
-<div class="toast" id="toast" role="status"></div>
+
+<div id="toast"></div>
+
 <script type="module">
 import * as THREE from "three";
-import {OrbitControls} from "three/addons/controls/OrbitControls.js";
-import {TransformControls} from "three/addons/controls/TransformControls.js";
-import {XRButton} from "three/addons/webxr/XRButton.js";
 
-const $=s=>document.querySelector(s), canvas=$("#stage");
-const state={name:"",cakeId:new URLSearchParams(location.search).get("cake")||"local",cakeName:"みんなのクリスマスケーキ",objects:[],history:[],future:[],selectedId:null,mode:"translate",room:"classic",flavor:"strawberry",message:"Merry Christmas!",colors:{cream:"#fff0e8",sponge:"#e9bd82",choco:"#6b382c"},db:null,channel:null,remote:false,applyingRemote:false,vr:false,gyro:false};
-const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false,powerPreference:"high-performance"});
-renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.12;renderer.xr.enabled=true;
-const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(38,1,.1,100);
-camera.position.set(5.8,4.5,7.4);
-const controls=new OrbitControls(camera,renderer.domElement);controls.target.set(0,1.15,0);controls.enableDamping=true;controls.dampingFactor=.07;controls.minDistance=4;controls.maxDistance=13;controls.maxPolarAngle=Math.PI*.49;controls.enablePan=true;
-scene.add(new THREE.HemisphereLight(0xffe9d1,0x584333,1.8));
-const keyLight=new THREE.DirectionalLight(0xffe4bd,2.8);keyLight.position.set(-4,8,5);keyLight.castShadow=true;keyLight.shadow.mapSize.set(1024,1024);scene.add(keyLight);
-const fillLight=new THREE.PointLight(0xffc66e,30,16);fillLight.position.set(4,3,2);scene.add(fillLight);
-const roomGroup=new THREE.Group();scene.add(roomGroup);const cakeGroup=new THREE.Group();scene.add(cakeGroup);
-const creamMat=new THREE.MeshStandardMaterial({color:state.colors.cream,roughness:.78}),spongeMat=new THREE.MeshStandardMaterial({color:state.colors.sponge,roughness:.9}),chocoMat=new THREE.MeshStandardMaterial({color:state.colors.choco,roughness:.45});
-const editable=new THREE.Group();cakeGroup.add(editable);const objectsById=new Map();let selected=null,plate=null,messagePlane=null,transform=null,historyLock=false,lastCommitted=null;
-const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();let pointerDown=null;
-const cloneData=o=>JSON.parse(JSON.stringify(o));
-function makeId(){return crypto.randomUUID?.()||"obj-"+Date.now()+"-"+Math.random().toString(36).slice(2,8)}
-function material(color,roughness=.7){return new THREE.MeshStandardMaterial({color,roughness})}
-function addCakeMesh(geo,mat,y){const m=new THREE.Mesh(geo,mat);m.position.y=y;m.castShadow=true;m.receiveShadow=true;cakeGroup.add(m);return m}
-function buildCake(){
- for(const o of [...cakeGroup.children])if(o!==editable){cakeGroup.remove(o);if(o.geometry)o.geometry.dispose();}
- const layers=[[1.55,1.62,.48,spongeMat,.62],[1.58,1.58,.13,creamMat,.93],[1.34,1.4,.43,spongeMat,1.2],[1.38,1.38,.13,creamMat,1.48],[1.39,1.39,.09,creamMat,1.58]];
- for(const [rt,rb,h,mat,y] of layers)addCakeMesh(new THREE.CylinderGeometry(rt,rb,h,64),mat,y);
- for(let i=0;i<16;i++){const a=i*Math.PI*2/16,d=new THREE.Mesh(new THREE.SphereGeometry(.145,16,12),creamMat);d.position.set(Math.cos(a)*1.18,1.68,Math.sin(a)*1.18);d.scale.y=1.18;d.castShadow=true;cakeGroup.add(d);}
- plate=new THREE.Mesh(new THREE.BoxGeometry(1.08,.075,.47),chocoMat);plate.position.set(0,1.73,.15);plate.rotation.x=-.12;plate.castShadow=true;cakeGroup.add(plate);updateMessageMesh();
-}
-function updateMessageMesh(){
- if(messagePlane){cakeGroup.remove(messagePlane);messagePlane.geometry.dispose();messagePlane.material.map?.dispose();messagePlane.material.dispose();}
- const c=document.createElement("canvas");c.width=768;c.height=160;const ctx=c.getContext("2d");ctx.clearRect(0,0,c.width,c.height);ctx.fillStyle="#fff7e8";ctx.font="bold 48px Georgia,serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(state.message||"Merry Christmas!",384,82,730);
- const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;messagePlane=new THREE.Mesh(new THREE.PlaneGeometry(.94,.20),new THREE.MeshBasicMaterial({map:tex,transparent:true,side:THREE.DoubleSide}));messagePlane.position.set(0,1.79,.405);cakeGroup.add(messagePlane);
-}
-const roomThemes={classic:{wall:"#263e36",floor:"#76543d",light:"#ffcf8b",snow:false},snow:{wall:"#617a89",floor:"#8a7561",light:"#ffe5c1",snow:true},nordic:{wall:"#d8d0bd",floor:"#ad9477",light:"#fff0d2",snow:false},party:{wall:"#641f2b",floor:"#53352d",light:"#ffce7b",snow:false},night:{wall:"#101d3c",floor:"#343b5b",light:"#9bbdff",snow:true}};
-function buildRoom(name){
- state.room=name;roomGroup.clear();const t=roomThemes[name]||roomThemes.classic;scene.background=new THREE.Color(t.wall);
- const floor=new THREE.Mesh(new THREE.PlaneGeometry(200,200),material(t.floor));floor.rotation.x=-Math.PI/2;floor.position.y=-.03;floor.receiveShadow=true;roomGroup.add(floor);
- const wall=new THREE.Mesh(new THREE.PlaneGeometry(16,9),material(t.wall));wall.position.set(0,4,-5);roomGroup.add(wall);
- const pane=new THREE.Mesh(new THREE.PlaneGeometry(3.2,2.2),material(name==="night"?"#182e57":"#9bb8c5",.3));pane.position.set(-3,3.1,-4.92);roomGroup.add(pane);
- const frame=material("#5a3c2d");for(const [x,y,w,h]of[[-3,4.22,3.35,.09],[-3,2,3.35,.09],[-4.62,3.1,.09,2.3],[-1.38,3.1,.09,2.3],[-3,3.1,.07,2.2],[-3,3.1,3.2,.07]]){const b=new THREE.Mesh(new THREE.BoxGeometry(w,h,.12),frame);b.position.set(x,y,-4.82);roomGroup.add(b);}
- const light=new THREE.PointLight(t.light,name==="night"?18:28,18);light.position.set(0,5,2);roomGroup.add(light);
- if(["classic","party","snow"].includes(name)){const tree=new THREE.Group();const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.12,.18,.7,12),material("#68442e"));trunk.position.y=.35;tree.add(trunk);for(let i=0;i<3;i++){const cone=new THREE.Mesh(new THREE.ConeGeometry(1-i*.19,1.35,24),material("#1f6547"));cone.position.y=1+i*.75;cone.castShadow=true;tree.add(cone);}for(let i=0;i<22;i++){const a=i*2.4,r=.35+(i%6)*.1,y=.6+(i%6)*.47;const bulb=new THREE.Mesh(new THREE.SphereGeometry(.055,8,8),new THREE.MeshBasicMaterial({color:["#ffd36a","#e95b55","#6bc8d0"][i%3]}));bulb.position.set(Math.cos(a)*r,y,Math.sin(a)*r);tree.add(bulb);}tree.position.set(3,0,-2.4);roomGroup.add(tree);}
- if(t.snow){const p=[];for(let i=0;i<250;i++)p.push((Math.random()-.5)*8,Math.random()*6+1,-4.7);const g=new THREE.BufferGeometry();g.setAttribute("position",new THREE.Float32BufferAttribute(p,3));roomGroup.add(new THREE.Points(g,new THREE.PointsMaterial({color:"#fff",size:.045})));}
-}
-function objectToData(root){return{id:root.userData.id,kind:root.userData.kind,position:root.position.toArray(),rotation:root.rotation.toArray(),scale:root.scale.toArray(),color:root.userData.color||null,text:root.userData.text||null,owner:root.userData.owner||state.name};}
-function createObject(data){
- let root;
- const red=material(data.color||"#c92335",.42),green=material("#347447",.65);
- if(data.kind==="berry"){root=new THREE.Group();const berry=new THREE.Mesh(new THREE.SphereGeometry(.16,20,16),red);berry.scale.set(.85,1.15,.85);berry.position.y=.13;berry.castShadow=true;root.add(berry);const leaf=new THREE.Mesh(new THREE.ConeGeometry(.07,.16,5),green);leaf.position.y=.29;leaf.rotation.z=.3;root.add(leaf);}
- else if(data.kind==="candle"){root=new THREE.Group();const stick=new THREE.Mesh(new THREE.CylinderGeometry(.045,.05,.55,16),material("#f5e8d0"));stick.position.y=.28;stick.castShadow=true;root.add(stick);const flame=new THREE.Mesh(new THREE.SphereGeometry(.075,12,12),new THREE.MeshBasicMaterial({color:"#ffb52e"}));flame.scale.set(.65,1.5,.65);flame.position.y=.62;root.add(flame);}
- else if(data.kind==="plate"){root=new THREE.Mesh(new THREE.BoxGeometry(.72,.07,.4),material(data.color||state.colors.choco,.45));}
- else if(data.kind==="star"){root=new THREE.Mesh(new THREE.ConeGeometry(.18,.35,5),material("#e9bd58",.35));}
- else return null;
- root.userData={id:data.id||makeId(),kind:data.kind,color:data.color||null,owner:data.owner||state.name,editable:true};
- root.position.fromArray(data.position||[0,1.76,0]);root.rotation.fromArray(data.rotation||[0,0,0]);root.scale.fromArray(data.scale||[1,1,1]);editable.add(root);objectsById.set(root.userData.id,root);return root;
-}
-function snapshot(){return{cakeName:state.cakeName,objects:[...objectsById.values()].map(objectToData),room:state.room,flavor:state.flavor,colors:{...state.colors},message:state.message};}
-function applySnapshot(s){
- state.applyingRemote=true;state.cakeName=s.cakeName||state.cakeName;$("#cakeNameInput").value=state.cakeName;$("#cakeTitle").textContent=state.cakeName;for(const o of [...editable.children]){editable.remove(o);dispose(o);}objectsById.clear();
- state.room=s.room||"classic";$("#roomPreset").value=state.room;buildRoom(state.room);
- state.flavor=s.flavor||"strawberry";$("#flavor").value=state.flavor;
- state.colors={...state.colors,...(s.colors||{})};
- for(const [id,mat]of[["creamColor",creamMat],["spongeColor",spongeMat],["chocoColor",chocoMat]]){const v=state.colors[id==="creamColor"?"cream":id==="spongeColor"?"sponge":"choco"];mat.color.set(v);$("#"+id).value=v;$("#"+id.replace("Color","Hex")).value=v;}
- state.message=s.message||"";$("#messageText").value=state.message;buildCake();(s.objects||[]).forEach(createObject);state.applyingRemote=false;lastCommitted=JSON.stringify(snapshot());
-}
-function dispose(o){o.traverse?.(c=>{c.geometry?.dispose();if(Array.isArray(c.material))c.material.forEach(m=>m.dispose());else if(c.material)c.material.dispose();});}
-function selectObject(obj){selected=obj;transform.detach();if(obj){transform.attach(obj);$("#selectedLabel").textContent=(obj.userData.kind||"アイテム")+" · "+obj.userData.owner;}else $("#selectedLabel").textContent="アイテムをタップして選択";}
-transform=new TransformControls(camera,renderer.domElement);transform.setMode("translate");transform.setSpace("world");transform.addEventListener("dragging-changed",e=>{controls.enabled=!e.value;if(!e.value&&selected)commit("アイテムを移動");});transform.addEventListener("objectChange",()=>{});scene.add(transform.getHelper());
-function commit(action){
- if(state.applyingRemote)return;
- if(lastCommitted){state.history.push(lastCommitted);if(state.history.length>60)state.history.shift();}
- lastCommitted=JSON.stringify(snapshot());state.future=[];refreshUndo();log(action);saveLocal();publishState();
-}
-function refreshUndo(){$("#undoBtn").disabled=!state.history.length;$("#redoBtn").disabled=!state.future.length;}
-function restoreFromJson(s){applySnapshot(JSON.parse(s));}
-function undo(){if(!state.history.length)return;state.future.push(JSON.stringify(snapshot()));const prev=state.history.pop();restoreFromJson(prev);lastCommitted=JSON.stringify(snapshot());refreshUndo();log("操作を取り消し");saveLocal();publishState();}
-function redo(){if(!state.future.length)return;state.history.push(JSON.stringify(snapshot()));const next=state.future.pop();restoreFromJson(next);lastCommitted=JSON.stringify(snapshot());refreshUndo();log("操作をやり直し");saveLocal();publishState();}
-function log(action){const list=$("#history");if(list.querySelector(".hint"))list.innerHTML="";const d=document.createElement("div");d.className="historyItem";const t=document.createElement("time");t.textContent=new Date().toLocaleString("ja-JP");d.append(document.createTextNode(`${state.name||"ゲスト"}：${action}`),t);list.prepend(d);while(list.children.length>40)list.lastElementChild.remove();}
-let toastTimer;function toast(s){const el=$("#toast");el.textContent=s;el.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove("show"),2200);}
-function add(kind){const pos=[(Math.random()-.5)*1.4,1.77,(Math.random()-.5)*1.2];const o=createObject({id:makeId(),kind,position:pos,owner:state.name,color:kind==="plate"?state.colors.choco:null});selectObject(o);commit(kind==="berry"?"イチゴを追加":kind==="candle"?"ろうそくを追加":"チョコプレートを追加");}
-function setColor(which,value){if(!/^#[0-9a-fA-F]{6}$/.test(value))return;state.colors[which]=value;({cream:creamMat,sponge:spongeMat,choco:chocoMat})[which].color.set(value);if(which==="choco"&&selected?.userData.kind==="plate")selected.material.color.set(value);commit("色を変更");}
-function bindColor(which){const c=$("#"+which+"Color"),h=$("#"+which+"Hex");c.addEventListener("change",()=>{h.value=c.value;setColor(which,c.value);});h.addEventListener("change",()=>{if(/^#[0-9a-fA-F]{6}$/.test(h.value)){c.value=h.value;setColor(which,h.value);}else h.value=c.value;});}
-["cream","sponge","choco"].forEach(bindColor);
-$("#flavor").addEventListener("change",e=>{const p={strawberry:["#fff0e8","#e9bd82","#6b382c"],chocolate:["#75452f","#b77a4c","#3d211c"],matcha:["#9caf76","#dfc79c","#51412c"],blueberry:["#c4a5d4","#e7c7a6","#50355e"]}[e.target.value];if(!p)return;state.flavor=e.target.value;["cream","sponge","choco"].forEach((k,i)=>{$("#"+k+"Color").value=p[i];$("#"+k+"Hex").value=p[i];state.colors[k]=p[i];({cream:creamMat,sponge:spongeMat,choco:chocoMat})[k].color.set(p[i]);});commit("ケーキの味を変更");});
-$("#roomPreset").addEventListener("change",e=>{buildRoom(e.target.value);commit("部屋の背景を変更");});
-$("#updateMessage").addEventListener("click",()=>{state.message=$("#messageText").value.trim().slice(0,28);updateMessageMesh();commit("メッセージを変更");});
-$("#addBerry").onclick=()=>add("berry");$("#addCandle").onclick=()=>add("candle");$("#addPlate").onclick=()=>add("plate");
-$("#undoBtn").onclick=undo;$("#redoBtn").onclick=redo;
-$("#deleteBtn").onclick=()=>{if(!selected)return toast("削除するアイテムを選択してください");const id=selected.userData.id;editable.remove(selected);objectsById.delete(id);dispose(selected);selectObject(null);commit("アイテムを削除");};
-$("#moveBtn").onclick=()=>{transform.setMode("translate");toast("移動モード");};$("#rotateBtn").onclick=()=>{transform.setMode("rotate");toast("回転モード");};$("#scaleBtn").onclick=()=>{transform.setMode("scale");toast("サイズ変更モード");};
-$("#nudgeLeft").onclick=()=>nudge(-.12,0);$("#nudgeRight").onclick=()=>nudge(.12,0);$("#nudgeFront").onclick=()=>nudge(0,.12);$("#nudgeBack").onclick=()=>nudge(0,-.12);
-function nudge(x,z){if(!selected)return toast("アイテムを選択してください");selected.position.x+=x;selected.position.z+=z;commit("アイテムを移動");}
-$("#resetView").onclick=()=>{camera.position.set(5.8,4.5,7.4);controls.target.set(0,1.15,0);controls.update();};
-$("#setCakeName").onclick=()=>{const v=$("#cakeNameInput").value.trim().slice(0,48);if(!v)return toast("ケーキ名を入力してください");state.cakeName=v;$("#cakeTitle").textContent=v;commit("ケーキ名を変更");};
-$("#shareBtn").onclick=async()=>{const u=new URL(location.href);u.searchParams.set("cake",state.cakeId);try{await navigator.clipboard.writeText(u.toString());toast("共有リンクをコピーしました");}catch{prompt("このリンクをコピーしてください",u.toString());}};
-function onPick(e){const r=canvas.getBoundingClientRect();pointer.x=((e.clientX-r.left)/r.width)*2-1;pointer.y=-((e.clientY-r.top)/r.height)*2+1;raycaster.setFromCamera(pointer,camera);const hits=raycaster.intersectObjects(editable.children,true);if(!hits.length){if(!transform.axis)selectObject(null);return;}let root=hits[0].object;while(root.parent&&root.parent!==editable)root=root.parent;selectObject(root);}
-canvas.addEventListener("pointerdown",e=>{pointerDown={x:e.clientX,y:e.clientY};});
-canvas.addEventListener("pointerup",e=>{if(pointerDown&&Math.hypot(e.clientX-pointerDown.x,e.clientY-pointerDown.y)<8&&!transform.dragging)onPick(e);pointerDown=null;});
-canvas.addEventListener("dblclick",()=>{if(selected){transform.setMode("translate");toast("選択中のアイテムを移動できます");}});
-function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
-new ResizeObserver(resize).observe(canvas);
-function saveLocal(){try{localStorage.setItem("cakeShare:"+state.cakeId,JSON.stringify(snapshot()));}catch(e){console.warn("local save failed",e);}}
-function loadLocal(){try{const s=localStorage.getItem("cakeShare:"+state.cakeId);if(s)applySnapshot(JSON.parse(s));}catch(e){console.warn("local data invalid",e);}}
-const urlParams=new URLSearchParams(location.search);if(!urlParams.has("cake")){state.cakeId=makeId().replaceAll("-","").slice(0,16);const u=new URL(location.href);u.searchParams.set("cake",state.cakeId);history.replaceState({}, "",u);}
-loadLocal();lastCommitted=JSON.stringify(snapshot());$("#cakeNameInput").value=state.cakeName;$("#cakeTitle").textContent=state.cakeName;buildRoom(state.room);buildCake();resize();
-function animate(){renderer.setAnimationLoop(()=>{controls.update();renderer.render(scene,camera);});}animate();
+/* =========================================================
+   Supabase設定
+   URLと公開用キーをここに埋め込む。
+   service_role / secret key は絶対に使用しない。
+========================================================= */
+const SUPABASE_URL = "";
+const SUPABASE_ANON_KEY = "";
 
-/* Custom Cardboard stereo mode: side-by-side eye cameras with gyro-controlled head pose.
-   For production-grade optical distortion, add per-device lens calibration. */
-let cardboard=false,gyroEnabled=false,deviceOrientation=null,orientationHandler=null,baseAlpha=0,baseBeta=0,baseGamma=0;
-const normalRender=renderer.render.bind(renderer);
-function orientationToQuaternion(alpha,beta,gamma){const e=new THREE.Euler(THREE.MathUtils.degToRad(beta),THREE.MathUtils.degToRad(alpha),-THREE.MathUtils.degToRad(gamma),"YXZ");const q=new THREE.Quaternion().setFromEuler(e);q.multiply(new THREE.Quaternion(-Math.sqrt(.5),0,0,Math.sqrt(.5)));return q;}
-async function enableGyro(){if(typeof DeviceOrientationEvent==="undefined"){toast("この端末ではジャイロを利用できません");return false;}try{if(typeof DeviceOrientationEvent.requestPermission==="function"){const p=await DeviceOrientationEvent.requestPermission();if(p!=="granted"){toast("モーションセンサーの許可が必要です");return false;}}orientationHandler=e=>{if(e.alpha==null)return;deviceOrientation=e;};window.addEventListener("deviceorientation",orientationHandler,true);gyroEnabled=true;toast("ジャイロを有効にしました");return true;}catch(e){toast("ジャイロを開始できませんでした");return false;}}
-function disableGyro(){if(orientationHandler)window.removeEventListener("deviceorientation",orientationHandler,true);orientationHandler=null;gyroEnabled=false;deviceOrientation=null;}
-function renderCardboard(){
- const w=renderer.domElement.width,h=renderer.domElement.height,half=Math.floor(w/2);const eyeSep=.064;
- const q=deviceOrientation?orientationToQuaternion(deviceOrientation.alpha||0,deviceOrientation.beta||0,deviceOrientation.gamma||0):null;
- const forward=new THREE.Vector3(0,0,-1);if(q)forward.applyQuaternion(q);
- const target=new THREE.Vector3().copy(camera.position).add(forward.multiplyScalar(5));
- const left=new THREE.PerspectiveCamera(camera.fov,half/h,camera.near,camera.far),right=left.clone();
- left.position.copy(camera.position).add(new THREE.Vector3(-eyeSep/2,0,0));right.position.copy(camera.position).add(new THREE.Vector3(eyeSep/2,0,0));
- if(q){left.quaternion.copy(q);right.quaternion.copy(q);left.position.set(0,1.65,4);right.position.set(.064,1.65,4);left.lookAt(target);right.lookAt(target);}
- else{left.copy(camera);right.copy(camera);left.position.add(new THREE.Vector3(-eyeSep/2,0,0));right.position.add(new THREE.Vector3(eyeSep/2,0,0));}
- renderer.setScissorTest(true);renderer.setViewport(0,0,half,h);renderer.setScissor(0,0,half,h);renderer.render(scene,left);
- renderer.setViewport(half,0,w-half,h);renderer.setScissor(half,0,w-half,h);renderer.render(scene,right);renderer.setScissorTest(false);renderer.setViewport(0,0,w,h);
-}
-$("#vrBtn").onclick=async()=>{if(!cardboard){const ok=await enableGyro();if(!ok&&typeof DeviceOrientationEvent!=="undefined")return;cardboard=true;$("#vrBtn").classList.add("active");$("#vrBtn").textContent="VR終了";toast("Cardboard表示中。横向きでゴーグルに装着してください");}else{cardboard=false;disableGyro();$("#vrBtn").classList.remove("active");$("#vrBtn").textContent="🥽 Cardboard";}};
-$("#webxrBtn").onclick=async()=>{if(!("xr"in navigator)){toast("このブラウザはWebXRに対応していません。Cardboardを利用してください");return;}try{const supported=await navigator.xr.isSessionSupported("immersive-vr");if(!supported){toast("VRセッション非対応です");return;}const session=await navigator.xr.requestSession("immersive-vr",{optionalFeatures:["local-floor","bounded-floor"]});renderer.xr.setReferenceSpaceType("local-floor");await renderer.xr.setSession(session);toast("WebXR VRを開始しました");session.addEventListener("end",()=>toast("VRを終了しました"));}catch(e){toast("WebXRを開始できませんでした");console.warn(e);}};
-const originalLoop=renderer.setAnimationLoop.bind(renderer);
-renderer.setAnimationLoop(()=>{controls.update();if(cardboard&&!renderer.xr.isPresenting)renderCardboard();else renderer.render(scene,camera);});
+/* =========================================================
+   基本設定
+========================================================= */
+const $ = id => document.getElementById(id);
+const canvas = $("scene");
 
-/* Supabase optional adapter. Paste Project URL + anon/publishable key.
-   Required SQL is included in the accompanying setup notes / code comments. */
-let supabaseClient=null;
-async function connectSupabase(){
- const url=$("#supabaseUrl").value.trim(),key=$("#supabaseKey").value.trim();if(!url||!key){toast("Project URLと公開キーを入力してください");return;}
- try{
-  const {createClient}=await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm");
-  supabaseClient=createClient(url,key);state.db=supabaseClient;
-  const table="cake_share_states";
-  const {data,error}=await supabaseClient.from(table).select("state").eq("cake_id",state.cakeId).maybeSingle();
-  if(error)throw error;if(data?.state)applySnapshot(data.state);
-  state.channel=supabaseClient.channel("cake:"+state.cakeId).on("postgres_changes",{event:"*",schema:"public",table,filter:"cake_id=eq."+state.cakeId},payload=>{if(payload.new?.state){applySnapshot(payload.new.state);log("ほかの参加者の変更を同期");}}).subscribe();
-  $("#connectionLabel").textContent="SUPABASE CONNECTED";$("#dbStatus").textContent="接続済み。共有データの同期を開始しました。";toast("Supabaseに接続しました");
- }catch(e){console.error(e);state.db=null;$("#connectionLabel").textContent="LOCAL / OFFLINE";$("#dbStatus").textContent="接続できませんでした。ローカルモードで続行します。";toast("接続失敗。ローカルモードで続行します");}
+const params = new URLSearchParams(location.search);
+const cakeId = params.get("cake") || crypto.randomUUID();
+if (!params.has("cake")) {
+  params.set("cake", cakeId);
+  history.replaceState(null, "", location.pathname + "?" + params);
 }
-async function publishState(){
- if(!supabaseClient)return;
- try{
-  const {error}=await supabaseClient.from("cake_share_states").upsert({cake_id:state.cakeId,state:snapshot(),updated_by:state.name,updated_at:new Date().toISOString()},{onConflict:"cake_id"});if(error)throw error;
- }catch(e){console.warn("sync failed",e);$("#connectionLabel").textContent="LOCAL / SYNC ERROR";}
-}
-$("#connectBtn").onclick=connectSupabase;$("#localBtn").onclick=()=>{supabaseClient=null;state.db=null;if(state.channel){state.channel.unsubscribe();state.channel=null;}$("#connectionLabel").textContent="OFFLINE / LOCAL";$("#dbStatus").textContent="ローカルモード。変更はこの端末に保存されます。";toast("ローカルモードに切り替えました");};
 
-/* Name gate */
-$("#nameForm").addEventListener("submit",e=>{e.preventDefault();const name=$("#displayName").value.trim();if(!name)return;state.name=name;sessionStorage.setItem("cakeShareName",name);$("#currentName").textContent=name;$("#nameModal").classList.add("hidden");log("編集に参加");});
-const savedName=sessionStorage.getItem("cakeShareName");if(savedName){state.name=savedName;$("#currentName").textContent=savedName;$("#nameModal").classList.add("hidden");}
-if("serviceWorker"in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("./sw.js").catch(()=>{});
+let editorName = "";
+let cakeTitle = "クリスマスケーキ";
+let selectedObject = null;
+let decorations = [];
+let undoStack = [];
+let redoStack = [];
+let lastSnapshot = "";
+let supabase = null;
+let realtimeChannel = null;
+let applyingRemote = false;
+let saveTimer = null;
+let cardboardMode = false;
+let gyroEnabled = false;
+let xrSession = null;
+
+const defaultState = {
+  title: cakeTitle,
+  flavor: "strawberry",
+  cream: "#fff1e8",
+  sponge: "#e9ad67",
+  chocolate: "#6b352d",
+  message: "",
+  room: "classic",
+  decorations: []
+};
+
+let state = structuredClone(defaultState);
+
+function toast(message) {
+  const el = $("toast");
+  el.textContent = message;
+  el.classList.add("show");
+  setTimeout(() => el.classList.remove("show"), 2200);
+}
+
+function setStatus(message) {
+  $("status").textContent = message;
+}
+
+/* =========================================================
+   名前入力
+========================================================= */
+$("enterButton").addEventListener("click", () => {
+  const name = $("editorName").value.trim();
+  if (!name) {
+    toast("名前を入力してください");
+    return;
+  }
+  editorName = name;
+  sessionStorage.setItem("cakeShareName", name);
+  $("nameGate").style.display = "none";
+  initializeHistory();
+});
+
+const storedName = sessionStorage.getItem("cakeShareName");
+if (storedName) {
+  editorName = storedName;
+  $("editorName").value = storedName;
+  $("nameGate").style.display = "none";
+  initializeHistory();
+}
+
+/* =========================================================
+   Three.js シーン
+========================================================= */
+const scene = new THREE.Scene();
+scene.background = new THREE.Color("#18263b");
+
+const camera = new THREE.PerspectiveCamera(
+  45, 1, 0.1, 100
+);
+camera.position.set(0, 3.2, 7.5);
+camera.lookAt(0, 1, 0);
+
+const renderer = new THREE.WebGLRenderer({
+  canvas,
+  antialias: true,
+  alpha: false
+});
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0x536078, 2));
+
+const keyLight = new THREE.DirectionalLight(0xffe4c8, 3);
+keyLight.position.set(4, 8, 5);
+keyLight.castShadow = true;
+scene.add(keyLight);
+
+const fillLight = new THREE.PointLight(0x8dbbff, 35, 20);
+fillLight.position.set(-4, 3, -3);
+scene.add(fillLight);
+
+const cakeGroup = new THREE.Group();
+scene.add(cakeGroup);
+
+const roomGroup = new THREE.Group();
+scene.add(roomGroup);
+
+const decorationGroup = new THREE.Group();
+scene.add(decorationGroup);
+
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+
+function material(color, roughness = .65, metalness = 0) {
+  return new THREE.MeshStandardMaterial({
+    color,
+    roughness,
+    metalness
+  });
+}
+
+function makeCylinder(radiusTop, radiusBottom, height, color, y) {
+  const mesh = new THREE.Mesh(
+    new THREE.CylinderGeometry(radiusTop, radiusBottom, height, 64),
+    material(color)
+  );
+  mesh.position.y = y;
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  return mesh;
+}
+
+/* =========================================================
+   ケーキ生成
+========================================================= */
+function clearGroup(group) {
+  while (group.children.length) {
+    const obj = group.children.pop();
+    obj.geometry?.dispose();
+    if (Array.isArray(obj.material)) {
+      obj.material.forEach(m => m.dispose());
+    } else {
+      obj.material?.dispose();
+    }
+  }
+}
+
+function buildCake() {
+  clearGroup(cakeGroup);
+
+  cakeGroup.add(makeCylinder(1.35, 1.35, .16, "#d7dce5", .08));
+  cakeGroup.add(makeCylinder(1.12, 1.12, .55, state.sponge, .43));
+  cakeGroup.add(makeCylinder(1.16, 1.16, .12, state.cream, .76));
+  cakeGroup.add(makeCylinder(1.05, 1.05, .48, state.sponge, 1.06));
+  cakeGroup.add(makeCylinder(1.10, 1.10, .13, state.cream, 1.36));
+
+  // 上面のクリーム
+  const top = new THREE.Mesh(
+    new THREE.CylinderGeometry(1.1, 1.1, .08, 64),
+    material(state.cream)
+  );
+  top.position.y = 1.47;
+  top.castShadow = true;
+  cakeGroup.add(top);
+
+  // クリームの絞り
+  for (let i = 0; i < 14; i++) {
+    const a = i / 14 * Math.PI * 2;
+    const cream = new THREE.Mesh(
+      new THREE.SphereGeometry(.12, 18, 14),
+      material(state.cream)
+    );
+    cream.position.set(
+      Math.cos(a) * .88,
+      1.57,
+      Math.sin(a) * .88
+    );
+    cream.scale.y = 1.2;
+    cakeGroup.add(cream);
+  }
+
+  // メッセージプレート
+  if (state.message) {
+    const textureCanvas = document.createElement("canvas");
+    textureCanvas.width = 1024;
+    textureCanvas.height = 256;
+    const ctx = textureCanvas.getContext("2d");
+    ctx.clearRect(0, 0, 1024, 256);
+    ctx.fillStyle = state.chocolate;
+    ctx.font = "bold 100px sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(state.message, 512, 128, 950);
+
+    const texture = new THREE.CanvasTexture(textureCanvas);
+    const sign = new THREE.Mesh(
+      new THREE.PlaneGeometry(1.8, .45),
+      new THREE.MeshStandardMaterial({
+        map: texture,
+        transparent: true,
+        side: THREE.DoubleSide
+      })
+    );
+    sign.position.set(0, 1.78, .03);
+    cakeGroup.add(sign);
+  }
+
+  rebuildDecorations();
+}
+
+/* =========================================================
+   デコレーション
+========================================================= */
+function createDecoration(type, position) {
+  const group = new THREE.Group();
+  group.userData.decoration = true;
+  group.userData.type = type;
+  group.position.copy(position);
+
+  if (type === "strawberry") {
+    const berry = new THREE.Mesh(
+      new THREE.SphereGeometry(.17, 24, 18),
+      material("#e52f50", .35)
+    );
+    berry.scale.set(.85, 1.15, .85);
+    berry.castShadow = true;
+    group.add(berry);
+
+    for (let i = 0; i < 5; i++) {
+      const leaf = new THREE.Mesh(
+        new THREE.ConeGeometry(.055, .18, 8),
+        material("#43a66a")
+      );
+      const a = i / 5 * Math.PI * 2;
+      leaf.position.set(Math.cos(a) * .08, .17, Math.sin(a) * .08);
+      leaf.rotation.z = -.5;
+      group.add(leaf);
+    }
+  }
+
+  if (type === "candle") {
+    const body = new THREE.Mesh(
+      new THREE.CylinderGeometry(.045, .045, .48, 16),
+      material("#fff0d2")
+    );
+    body.position.y = .24;
+    group.add(body);
+
+    const flame = new THREE.Mesh(
+      new THREE.ConeGeometry(.07, .2, 16),
+      new THREE.MeshBasicMaterial({ color: "#ffb52e" })
+    );
+    flame.position.y = .58;
+    group.add(flame);
+  }
+
+  if (type === "chocolate") {
+    const bar = new THREE.Mesh(
+      new THREE.BoxGeometry(.34, .12, .24),
+      material(state.chocolate, .3)
+    );
+    bar.position.y = .06;
+    group.add(bar);
+  }
+
+  if (type === "star") {
+    const star = new THREE.Mesh(
+      new THREE.OctahedronGeometry(.18, 0),
+      new THREE.MeshStandardMaterial({
+        color: "#ffd45c",
+        metalness: .55,
+        roughness: .25,
+        emissive: "#553500"
+      })
+    );
+    group.add(star);
+  }
+
+  group.traverse(o => {
+    if (o.isMesh) {
+      o.castShadow = true;
+      o.userData.parentDecoration = group;
+    }
+  });
+
+  decorationGroup.add(group);
+  decorations.push(group);
+  return group;
+}
+
+function rebuildDecorations() {
+  clearGroup(decorationGroup);
+  decorations = [];
+
+  for (const item of state.decorations) {
+    const obj = createDecoration(
+      item.type,
+      new THREE.Vector3(item.x, item.y, item.z)
+    );
+    obj.rotation.y = item.ry || 0;
+    obj.scale.setScalar(item.scale || 1);
+  }
+}
+
+function serializeDecorations() {
+  return decorations.map(obj => ({
+    type: obj.userData.type,
+    x: obj.position.x,
+    y: obj.position.y,
+    z: obj.position.z,
+    ry: obj.rotation.y,
+    scale: obj.scale.x
+  }));
+}
+
+/* =========================================================
+   背景
+========================================================= */
+function buildRoom() {
+  clearGroup(roomGroup);
+
+  const roomColors = {
+    classic: "#25364c",
+    snow: "#172b49",
+    nordic: "#8a7767",
+    party: "#382747",
+    night: "#101b38"
+  };
+
+  scene.background = new THREE.Color(
+    roomColors[state.room] || roomColors.classic
+  );
+
+  const floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(30, 30),
+    material(state.room === "nordic" ? "#a98d70" : "#34445b")
+  );
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.y = -.02;
+  floor.receiveShadow = true;
+  roomGroup.add(floor);
+
+  // 壁
+  const wall = new THREE.Mesh(
+    new THREE.PlaneGeometry(30, 12),
+    material(roomColors[state.room])
+  );
+  wall.position.set(0, 5, -7);
+  roomGroup.add(wall);
+
+  // クリスマスツリー
+  const trunk = new THREE.Mesh(
+    new THREE.CylinderGeometry(.13, .18, .7, 16),
+    material("#765039")
+  );
+  trunk.position.set(-3, .35, -2);
+  roomGroup.add(trunk);
+
+  for (let i = 0; i < 3; i++) {
+    const tree = new THREE.Mesh(
+      new THREE.ConeGeometry(1.05 - i * .2, 1.55, 24),
+      material("#176747")
+    );
+    tree.position.set(-3, 1.15 + i * .75, -2);
+    roomGroup.add(tree);
+  }
+
+  const star = new THREE.Mesh(
+    new THREE.OctahedronGeometry(.22),
+    material("#ffd35b", .25, .4)
+  );
+  star.position.set(-3, 3.1, -2);
+  roomGroup.add(star);
+
+  // 雪・星の粒
+  if (state.room === "snow" || state.room === "night") {
+    const count = 450;
+    const positions = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      positions[i * 3] = (Math.random() - .5) * 18;
+      positions[i * 3 + 1] = Math.random() * 10;
+      positions[i * 3 + 2] = (Math.random() - .5) * 18;
+    }
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute(
+      "position",
+      new THREE.BufferAttribute(positions, 3)
+    );
+    const points = new THREE.Points(
+      geometry,
+      new THREE.PointsMaterial({
+        color: "#ffffff",
+        size: .045,
+        transparent: true,
+        opacity: .8
+      })
+    );
+    roomGroup.add(points);
+  }
+}
+
+/* =========================================================
+   味プリセット・UI
+========================================================= */
+const flavors = {
+  strawberry: ["#fff1e8", "#e9ad67", "#6b352d"],
+  chocolate: ["#8b5b4d", "#583b32", "#351b19"],
+  matcha: ["#b6c99a", "#d8b77b", "#45603b"],
+  blueberry: ["#c4c6f0", "#d5ad8c", "#403b70"]
+};
+
+$("flavor").addEventListener("change", () => {
+  const values = flavors[$("flavor").value];
+  state.flavor = $("flavor").value;
+  state.cream = values[0];
+  state.sponge = values[1];
+  state.chocolate = values[2];
+  syncInputs();
+  commitChange();
+});
+
+function syncInputs() {
+  $("creamColor").value = state.cream;
+  $("spongeColor").value = state.sponge;
+  $("chocoColor").value = state.chocolate;
+  $("flavor").value = state.flavor;
+  $("cakeName").value = state.title;
+  $("cakeMessage").value = state.message;
+  $("room").value = state.room;
+  $("cakeTitle").textContent = "🎂 " + state.title;
+}
+
+$("creamColor").addEventListener("input", () => {
+  state.cream = $("creamColor").value;
+  commitChange();
+});
+$("spongeColor").addEventListener("input", () => {
+  state.sponge = $("spongeColor").value;
+  commitChange();
+});
+$("chocoColor").addEventListener("input", () => {
+  state.chocolate = $("chocoColor").value;
+  commitChange();
+});
+$("room").addEventListener("change", () => {
+  state.room = $("room").value;
+  commitChange();
+});
+$("messageButton").addEventListener("click", () => {
+  state.message = $("cakeMessage").value.trim();
+  commitChange();
+});
+$("renameButton").addEventListener("click", () => {
+  state.title = $("cakeName").value.trim() || "Cake Share";
+  commitChange();
+});
+
+/* =========================================================
+   履歴・Undo / Redo
+========================================================= */
+function snapshot() {
+  state.decorations = serializeDecorations();
+  return JSON.stringify(state);
+}
+
+function initializeHistory() {
+  if (!lastSnapshot) {
+    lastSnapshot = snapshot();
+    undoStack = [];
+    redoStack = [];
+  }
+}
+
+function commitChange() {
+  if (applyingRemote) return;
+
+  const previous = lastSnapshot;
+  const next = snapshot();
+
+  if (previous !== next) {
+    undoStack.push(previous);
+    if (undoStack.length > 80) undoStack.shift();
+    redoStack = [];
+    lastSnapshot = next;
+  }
+
+  renderState();
+  saveLocal();
+  scheduleRemoteSave();
+  recordHistory();
+}
+
+function applySnapshot(value) {
+  applyingRemote = true;
+  state = JSON.parse(value);
+  cakeTitle = state.title;
+  syncInputs();
+  buildCake();
+  buildRoom();
+  lastSnapshot = snapshot();
+  applyingRemote = false;
+  saveLocal();
+}
+
+$("undoButton").addEventListener("click", () => {
+  if (!undoStack.length) return;
+  redoStack.push(snapshot());
+  applySnapshot(undoStack.pop());
+  scheduleRemoteSave();
+});
+
+$("redoButton").addEventListener("click", () => {
+  if (!redoStack.length) return;
+  undoStack.push(snapshot());
+  applySnapshot(redoStack.pop());
+  scheduleRemoteSave();
+});
+
+function renderState() {
+  cakeTitle = state.title;
+  syncInputs();
+  buildCake();
+  buildRoom();
+}
+
+/* =========================================================
+   オブジェクト操作
+========================================================= */
+function addDecoration(type) {
+  const angle = Math.random() * Math.PI * 2;
+  const radius = .55 + Math.random() * .3;
+  const obj = createDecoration(
+    type,
+    new THREE.Vector3(
+      Math.cos(angle) * radius,
+      1.68,
+      Math.sin(angle) * radius
+    )
+  );
+  selectedObject = obj;
+  commitChange();
+}
+
+document.querySelectorAll("[data-add]").forEach(button => {
+  button.addEventListener("click", () => {
+    addDecoration(button.dataset.add);
+  });
+});
+
+document.querySelectorAll("[data-move]").forEach(button => {
+  button.addEventListener("click", () => {
+    if (!selectedObject) {
+      toast("先にオブジェクトを選択してください");
+      return;
+    }
+    const step = .12;
+    const directions = {
+      left: [-step, 0, 0],
+      right: [step, 0, 0],
+      front: [0, 0, step],
+      back: [0, 0, -step],
+      up: [0, step, 0],
+      down: [0, -step, 0]
+    };
+    const d = directions[button.dataset.move];
+    selectedObject.position.x += d[0];
+    selectedObject.position.y += d[1];
+    selectedObject.position.z += d[2];
+    commitChange();
+  });
+});
+
+$("rotateButton").addEventListener("click", () => {
+  if (!selectedObject) return;
+  selectedObject.rotation.y += Math.PI / 8;
+  commitChange();
+});
+
+$("deleteButton").addEventListener("click", () => {
+  if (!selectedObject) return;
+  decorationGroup.remove(selectedObject);
+  decorations = decorations.filter(x => x !== selectedObject);
+  selectedObject = null;
+  commitChange();
+});
+
+/* =========================================================
+   ポインター・タッチ操作
+========================================================= */
+let pointerDown = null;
+let dragging = false;
+let previousPointer = { x: 0, y: 0 };
+
+canvas.addEventListener("pointerdown", event => {
+  pointerDown = { x: event.clientX, y: event.clientY };
+  previousPointer = { x: event.clientX, y: event.clientY };
+  dragging = false;
+  canvas.setPointerCapture(event.pointerId);
+});
+
+canvas.addEventListener("pointermove", event => {
+  if (!pointerDown || cardboardMode || gyroEnabled) return;
+
+  const dx = event.clientX - previousPointer.x;
+  const dy = event.clientY - previousPointer.y;
+
+  if (Math.abs(event.clientX - pointerDown.x) > 5 ||
+      Math.abs(event.clientY - pointerDown.y) > 5) {
+    dragging = true;
+  }
+
+  if (dragging) {
+    camera.position.applyAxisAngle(
+      new THREE.Vector3(0, 1, 0),
+      -dx * .005
+    );
+    camera.position.y = THREE.MathUtils.clamp(
+      camera.position.y - dy * .012, 1.2, 7
+    );
+    camera.lookAt(0, 1, 0);
+  }
+
+  previousPointer = { x: event.clientX, y: event.clientY };
+});
+
+canvas.addEventListener("pointerup", event => {
+  if (!dragging && pointerDown) {
+    const rect = canvas.getBoundingClientRect();
+    pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+    raycaster.setFromCamera(pointer, camera);
+
+    const hits = raycaster.intersectObjects(
+      decorationGroup.children, true
+    );
+
+    if (hits.length) {
+      let target = hits[0].object;
+      while (target.parent && target.parent !== decorationGroup) {
+        target = target.parent;
+      }
+      selectedObject = target;
+      toast("オブジェクトを選択しました");
+    } else {
+      selectedObject = null;
+    }
+  }
+  pointerDown = null;
+});
+
+/* =========================================================
+   ローカル保存
+========================================================= */
+const storageKey = "cake-share-" + cakeId;
+
+function saveLocal() {
+  try {
+    localStorage.setItem(storageKey, snapshot());
+  } catch (error) {
+    console.warn(error);
+    toast("保存できませんでした");
+  }
+}
+
+function loadLocal() {
+  try {
+    const raw = localStorage.getItem(storageKey);
+    if (raw) {
+      state = JSON.parse(raw);
+      syncInputs();
+      buildCake();
+      buildRoom();
+    }
+  } catch (error) {
+    console.warn("Local data load failed", error);
+  }
+}
+
+$("saveButton").addEventListener("click", () => {
+  saveLocal();
+  toast("この端末に保存しました");
+});
+
+$("shareButton").addEventListener("click", async () => {
+  const url = new URL(location.href);
+  url.searchParams.set("cake", cakeId);
+
+  try {
+    await navigator.clipboard.writeText(url.href);
+    toast("共有リンクをコピーしました");
+  } catch {
+    prompt("共有リンクをコピーしてください", url.href);
+  }
+});
+
+/* =========================================================
+   編集履歴
+========================================================= */
+function recordHistory() {
+  if (!editorName) return;
+  const key = "cake-share-history-" + cakeId;
+  let history = [];
+  try {
+    history = JSON.parse(localStorage.getItem(key) || "[]");
+  } catch {}
+  history.unshift({
+    name: editorName,
+    time: new Date().toISOString(),
+    action: "編集"
+  });
+  history = history.slice(0, 100);
+  localStorage.setItem(key, JSON.stringify(history));
+}
+
+/* =========================================================
+   Supabase（任意）
+========================================================= */
+async function connectSupabase() {
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    setStatus("ローカルモード：Supabase未設定");
+    return;
+  }
+
+  try {
+    const { createClient } = await import(
+      "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm"
+    );
+    supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const { data, error } = await supabase
+      .from("cake_share_states")
+      .select("state")
+      .eq("cake_id", cakeId)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    if (data?.state) {
+      const remote = JSON.stringify(data.state);
+      if (remote !== lastSnapshot) {
+        applySnapshot(remote);
+      }
+    } else {
+      await uploadRemote();
+    }
+
+    realtimeChannel = supabase
+      .channel("cake-" + cakeId)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "cake_share_states",
+          filter: "cake_id=eq." + cakeId
+        },
+        payload => {
+          if (!payload.new?.state) return;
+          const incoming = JSON.stringify(payload.new.state);
+          if (incoming !== lastSnapshot) {
+            applySnapshot(incoming);
+            toast("ほかの人の編集を受信しました");
+          }
+        }
+      )
+      .subscribe();
+
+    setStatus("Supabase接続済み");
+  } catch (error) {
+    console.error(error);
+    setStatus("Supabase接続失敗：ローカルモードで動作中");
+  }
+}
+
+async function uploadRemote() {
+  if (!supabase) return;
+
+  const current = JSON.parse(snapshot());
+
+  const { error } = await supabase
+    .from("cake_share_states")
+    .upsert({
+      cake_id: cakeId,
+      state: current,
+      updated_at: new Date().toISOString()
+    }, {
+      onConflict: "cake_id"
+    });
+
+  if (error) {
+    console.error(error);
+    setStatus("同期エラー：ローカル保存は継続中");
+  }
+}
+
+function scheduleRemoteSave() {
+  if (!supabase) return;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(uploadRemote, 500);
+}
+
+/* =========================================================
+   Cardboard レンズ向けステレオ表示
+========================================================= */
+let leftTarget, rightTarget;
+let vrScene, vrCamera;
+let leftCamera, rightCamera;
+let vrMaterial;
+let vrQuad;
+const IPD = 0.064;
+const LENS_STRENGTH = 0.22;
+
+function setupCardboard() {
+  const width = Math.max(1, Math.floor(innerWidth / 2));
+  const height = Math.max(1, innerHeight);
+
+  leftTarget?.dispose();
+  rightTarget?.dispose();
+
+  leftTarget = new THREE.WebGLRenderTarget(width, height);
+  rightTarget = new THREE.WebGLRenderTarget(width, height);
+
+  leftCamera = camera.clone();
+  rightCamera = camera.clone();
+
+  const distortionVertex = `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = vec4(position, 1.0);
+    }
+  `;
+
+  const distortionFragment = `
+    uniform sampler2D leftEye;
+    uniform sampler2D rightEye;
+    uniform float strength;
+    varying vec2 vUv;
+
+    vec2 distort(vec2 uv) {
+      vec2 centered = uv * 2.0 - 1.0;
+      float r2 = dot(centered, centered);
+      float factor = 1.0 + strength * r2;
+      return centered * factor * 0.5 + 0.5;
+    }
+
+    void main() {
+      bool isRight = vUv.x > 0.5;
+      vec2 localUv = vec2(
+        isRight ? (vUv.x - 0.5) * 2.0 : vUv.x * 2.0,
+        vUv.y
+      );
+
+      // 左右レンズそれぞれの中心を基準に補正
+      vec2 uv = distort(localUv);
+
+      // レンズ外周の黒いマスク
+      vec2 p = localUv * 2.0 - 1.0;
+      float radius = length(p);
+      if (radius > 1.0 || any(lessThan(uv, vec2(0.0))) ||
+          any(greaterThan(uv, vec2(1.0)))) {
+        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+        return;
+      }
+
+      vec4 color = isRight
+        ? texture2D(rightEye, uv)
+        : texture2D(leftEye, uv);
+
+      float vignette = smoothstep(1.0, 0.72, radius);
+      gl_FragColor = vec4(color.rgb * vignette, 1.0);
+    }
+  `;
+
+  vrScene = new THREE.Scene();
+  vrCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+
+  vrMaterial = new THREE.ShaderMaterial({
+    uniforms: {
+      leftEye: { value: leftTarget.texture },
+      rightEye: { value: rightTarget.texture },
+      strength: { value: LENS_STRENGTH }
+    },
+    vertexShader: distortionVertex,
+    fragmentShader: distortionFragment,
+    depthTest: false,
+    depthWrite: false
+  });
+
+  vrQuad = new THREE.Mesh(
+    new THREE.PlaneGeometry(2, 2),
+    vrMaterial
+  );
+  vrScene.add(vrQuad);
+}
+
+function setEyeCameras() {
+  leftCamera.copy(camera);
+  rightCamera.copy(camera);
+
+  const rightVector = new THREE.Vector3(1, 0, 0)
+    .applyQuaternion(camera.quaternion);
+
+  leftCamera.position.addScaledVector(rightVector, -IPD / 2);
+  rightCamera.position.addScaledVector(rightVector, IPD / 2);
+
+  leftCamera.updateMatrixWorld();
+  rightCamera.updateMatrixWorld();
+}
+
+function renderCardboard() {
+  if (!leftTarget || !rightTarget) setupCardboard();
+
+  setEyeCameras();
+
+  renderer.setRenderTarget(leftTarget);
+  renderer.clear();
+  renderer.render(scene, leftCamera);
+
+  renderer.setRenderTarget(rightTarget);
+  renderer.clear();
+  renderer.render(scene, rightCamera);
+
+  renderer.setRenderTarget(null);
+  renderer.setScissorTest(false);
+  renderer.clear();
+  renderer.render(vrScene, vrCamera);
+}
+
+async function enterCardboard() {
+  if (cardboardMode) return;
+
+  cardboardMode = true;
+  document.body.classList.add("cardboard");
+
+  setupCardboard();
+  resize();
+
+  try {
+    if (typeof DeviceOrientationEvent !== "undefined" &&
+        typeof DeviceOrientationEvent.requestPermission === "function") {
+      const permission = await DeviceOrientationEvent.requestPermission();
+      if (permission !== "granted") {
+        toast("ジャイロの許可が必要です");
+      }
+    }
+    gyroEnabled = true;
+    window.addEventListener("deviceorientation", onDeviceOrientation, true);
+  } catch (error) {
+    console.warn(error);
+    toast("ジャイロを利用できません");
+  }
+
+  toast("Cardboard鑑賞モード");
+}
+
+function exitCardboard() {
+  cardboardMode = false;
+  gyroEnabled = false;
+  document.body.classList.remove("cardboard");
+  window.removeEventListener("deviceorientation", onDeviceOrientation, true);
+  resize();
+  toast("通常編集モードに戻りました");
+}
+
+$("vrButton").addEventListener("click", enterCardboard);
+$("vrExit").addEventListener("click", exitCardboard);
+
+/* =========================================================
+   ジャイロ
+========================================================= */
+function onDeviceOrientation(event) {
+  if (!gyroEnabled || event.alpha == null) return;
+
+  const alpha = THREE.MathUtils.degToRad(event.alpha);
+  const beta = THREE.MathUtils.degToRad(event.beta || 0);
+  const gamma = THREE.MathUtils.degToRad(event.gamma || 0);
+
+  const deviceEuler = new THREE.Euler(beta, alpha, -gamma, "YXZ");
+  const deviceQuaternion = new THREE.Quaternion()
+    .setFromEuler(deviceEuler);
+
+  const screenAngle = THREE.MathUtils.degToRad(
+    screen.orientation?.angle || 0
+  );
+  const screenQuaternion = new THREE.Quaternion()
+    .setFromAxisAngle(new THREE.Vector3(0, 0, 1), -screenAngle);
+
+  camera.quaternion.copy(deviceQuaternion).multiply(screenQuaternion);
+}
+
+/* =========================================================
+   通常ジャイロ
+========================================================= */
+$("gyroButton").addEventListener("click", async () => {
+  if (gyroEnabled) {
+    gyroEnabled = false;
+    window.removeEventListener("deviceorientation", onDeviceOrientation, true);
+    toast("ジャイロを停止しました");
+    return;
+  }
+
+  try {
+    if (typeof DeviceOrientationEvent?.requestPermission === "function") {
+      const permission = await DeviceOrientationEvent.requestPermission();
+      if (permission !== "granted") return;
+    }
+    gyroEnabled = true;
+    window.addEventListener("deviceorientation", onDeviceOrientation, true);
+    toast("ジャイロを有効にしました");
+  } catch {
+    toast("この端末ではジャイロを利用できません");
+  }
+});
+
+/* =========================================================
+   WebXR
+========================================================= */
+$("xrButton").addEventListener("click", async () => {
+  if (!navigator.xr) {
+    toast("このブラウザはWebXRに対応していません");
+    return;
+  }
+
+  try {
+    const supported = await navigator.xr.isSessionSupported("immersive-vr");
+    if (!supported) {
+      toast("immersive-vrは利用できません");
+      return;
+    }
+
+    xrSession = await navigator.xr.requestSession("immersive-vr", {
+      optionalFeatures: ["local-floor", "bounded-floor"]
+    });
+
+    await renderer.xr.setSession(xrSession);
+    renderer.xr.enabled = true;
+
+    xrSession.addEventListener("end", () => {
+      renderer.xr.enabled = false;
+      xrSession = null;
+    });
+
+    toast("WebXRを開始しました");
+  } catch (error) {
+    console.error(error);
+    toast("WebXRを開始できませんでした");
+  }
+});
+
+/* =========================================================
+   リサイズ・描画
+========================================================= */
+function resize() {
+  const width = Math.max(1, $("stage").clientWidth);
+  const height = Math.max(1, $("stage").clientHeight);
+
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+
+  renderer.setSize(width, height, false);
+
+  if (cardboardMode) {
+    setupCardboard();
+  }
+}
+
+window.addEventListener("resize", resize);
+window.addEventListener("orientationchange", () => {
+  setTimeout(resize, 250);
+});
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  if (renderer.xr.isPresenting) {
+    renderer.render(scene, camera);
+    return;
+  }
+
+  if (cardboardMode) {
+    renderCardboard();
+  } else {
+    renderer.setRenderTarget(null);
+    renderer.render(scene, camera);
+  }
+}
+
+/* =========================================================
+   起動
+========================================================= */
+loadLocal();
+renderState();
+initializeHistory();
+resize();
+connectSupabase();
+animate();
+
 </script>
 </body>
 </html>
