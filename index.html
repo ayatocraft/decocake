@@ -2,1485 +2,1604 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#101827">
-<title>Cake Share 🎂</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#10251d">
+<title>Christmas Cake Studio</title>
 
 <style>
-:root {
-  color-scheme: dark;
-  --bg: #101827;
-  --panel: #1c293b;
-  --panel2: #26364b;
-  --text: #f7f4ef;
-  --muted: #aab7c8;
-  --accent: #ff8eaa;
-  --border: rgba(255,255,255,.12);
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  background: var(--bg);
-  color: var(--text);
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  overflow: hidden;
-}
-button, input, select {
-  font: inherit;
-}
-button {
-  border: 0;
-  border-radius: 12px;
-  padding: 11px 15px;
-  color: white;
-  background: #405675;
-  cursor: pointer;
-  touch-action: manipulation;
-}
-button:active { transform: scale(.97); }
-button.primary { background: #e66f91; }
-button.secondary { background: #34465f; }
-button.danger { background: #a74755; }
-input, select {
-  width: 100%;
-  min-width: 0;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: #101a29;
-  color: white;
-}
-label {
-  display: block;
-  font-size: 13px;
-  color: var(--muted);
-  margin: 10px 0 5px;
-}
-#app {
-  display: grid;
-  grid-template-columns: 300px 1fr;
-  height: 100dvh;
-}
-#editor {
-  overflow-y: auto;
-  padding: 16px;
-  background: var(--panel);
-  border-right: 1px solid var(--border);
-  z-index: 2;
-}
-h1 { font-size: 21px; margin: 0 0 5px; }
-h2 { font-size: 14px; margin: 22px 0 8px; }
-p, small { color: var(--muted); }
-.group {
-  padding: 12px;
-  background: rgba(255,255,255,.045);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  margin-top: 10px;
-}
-.row {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-.row > * { flex: 1; }
-.grid2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-#stage {
-  position: relative;
-  min-width: 0;
-  min-height: 0;
-  overflow: hidden;
-  background: #101827;
-}
-#scene {
-  display: block;
-  width: 100%;
-  height: 100%;
-  touch-action: none;
-}
-#topbar {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  right: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  pointer-events: none;
-}
-#topbar > * { pointer-events: auto; }
-#cakeTitle {
-  background: rgba(10,15,25,.65);
-  backdrop-filter: blur(12px);
-  padding: 9px 13px;
-  border-radius: 12px;
-  max-width: 65%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-#hint {
-  position: absolute;
-  bottom: 15px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(10,15,25,.7);
-  padding: 9px 14px;
-  border-radius: 20px;
-  color: white;
-  font-size: 12px;
-  text-align: center;
-  pointer-events: none;
-  max-width: 90%;
-}
-#vrExit {
-  display: none;
-  position: absolute;
-  z-index: 10;
-  top: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0,0,0,.75);
-}
-#status {
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: 10px;
-  overflow-wrap: anywhere;
-}
-#nameGate {
-  position: fixed;
-  inset: 0;
-  z-index: 50;
-  display: grid;
-  place-items: center;
-  padding: 20px;
-  background: rgba(5,10,20,.88);
-}
-#nameCard {
-  width: min(420px, 100%);
-  background: var(--panel);
-  border: 1px solid var(--border);
-  padding: 22px;
-  border-radius: 20px;
-}
-#nameCard h1 { margin-bottom: 8px; }
-#toast {
-  position: fixed;
-  z-index: 100;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 10px 16px;
-  background: #26364b;
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity .2s;
-}
-#toast.show { opacity: 1; }
+@import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap');
 
-/* Cardboard: 編集UIを完全に消して映像だけにする */
+:root {
+  --bg:#10251d;
+  --panel:rgba(15,35,27,.94);
+  --panel2:#1b3a2d;
+  --gold:#e8c879;
+  --red:#b83d43;
+  --text:#fff8e8;
+  --muted:#c6d2c8;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:"Zen Maru Gothic",sans-serif;overflow:hidden;
+  touch-action:pan-y;
+}
+button,input,select{font:inherit}
+button{
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:12px;padding:9px 12px;
+  background:#28523e;color:white;cursor:pointer;
+}
+button:active{transform:scale(.97)}
+button.primary{background:#a83d43}
+button.gold{background:#8c6d2e}
+button:disabled{opacity:.4}
+input,select{
+  width:100%;padding:9px;border-radius:9px;
+  border:1px solid #547361;background:#10251d;color:white;
+}
+label{display:block;font-size:12px;color:var(--muted);margin:9px 0 4px}
+#stage{position:fixed;inset:0;z-index:0}
+#stage canvas{display:block;width:100%;height:100%}
+#topbar{
+  position:fixed;z-index:5;top:0;left:0;right:0;
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;padding-top:max(10px,env(safe-area-inset-top));
+  background:linear-gradient(#07150fe8,transparent);
+  pointer-events:none;
+}
+#topbar>*{pointer-events:auto}
+.brand{font-size:18px;font-weight:900;color:var(--gold)}
+#status{font-size:11px;color:#d6e2d7}
+#editor{
+  position:fixed;z-index:4;top:68px;left:12px;bottom:12px;
+  width:300px;max-width:calc(100vw - 24px);
+  background:var(--panel);border:1px solid #52715e;
+  border-radius:18px;overflow:auto;padding:14px;
+  backdrop-filter:blur(15px);
+}
+.section{border-bottom:1px solid #ffffff20;padding:10px 0}
+.section h3{margin:0 0 8px;color:var(--gold);font-size:14px}
+.row{display:flex;gap:7px;align-items:center}
+.row>*{flex:1;min-width:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.small{font-size:11px;color:var(--muted)}
+#hint{
+  position:fixed;z-index:3;bottom:16px;left:50%;
+  transform:translateX(-50%);background:#07150dcc;
+  padding:8px 14px;border-radius:20px;font-size:11px;
+  text-align:center;white-space:nowrap;pointer-events:none;
+}
+#vrExit{
+  display:none;position:fixed;z-index:20;right:14px;top:14px;
+  padding:12px 16px;background:#a83d43;
+}
 body.cardboard #editor,
 body.cardboard #topbar,
-body.cardboard #hint {
-  display: none !important;
+body.cardboard #hint{display:none}
+body.cardboard #vrExit{display:block}
+#modal{
+  position:fixed;z-index:30;inset:0;background:#000b;
+  display:flex;align-items:center;justify-content:center;padding:20px;
 }
-body.cardboard #app {
-  display: block;
+#modalBox{
+  width:min(420px,100%);background:#173528;
+  border:1px solid #66836c;border-radius:20px;padding:22px;
 }
-body.cardboard #stage {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100dvh;
+#modalBox h2{color:var(--gold);margin-top:0}
+#toast{
+  position:fixed;z-index:40;left:50%;bottom:65px;
+  transform:translateX(-50%);background:#172b20;
+  border:1px solid #8aab8e;padding:10px 16px;
+  border-radius:20px;display:none;font-size:13px;
 }
-body.cardboard #scene {
-  width: 100%;
-  height: 100%;
+#musicPanel{
+  position:fixed;z-index:6;right:12px;top:68px;
+  width:220px;padding:12px;border-radius:15px;
+  background:var(--panel);border:1px solid #52715e;
+  backdrop-filter:blur(12px);
 }
-body.cardboard #vrExit {
-  display: block;
-}
-body.cardboard {
-  cursor: none;
-}
-
-@media (max-width: 700px) {
-  #app {
-    display: flex;
-    flex-direction: column;
-  }
-  #stage {
-    order: 1;
-    flex: 1;
-    min-height: 42dvh;
-  }
-  #editor {
-    order: 2;
-    width: 100%;
-    height: 58dvh;
-    border-right: 0;
-    border-top: 1px solid var(--border);
-    padding: 12px;
-  }
-  #topbar { top: 8px; left: 8px; right: 8px; }
-  #hint { bottom: 8px; }
+#musicPanel .small{line-height:1.6}
+#musicPanel input[type=range]{padding:0}
+#history{max-height:80px;overflow:auto;font-size:11px;color:#d2e0d3}
+@media(max-width:650px){
+  #editor{top:auto;left:8px;right:8px;bottom:8px;
+    width:auto;max-width:none;max-height:43vh;padding:11px}
+  #musicPanel{top:58px;right:8px;width:180px}
+  .brand{font-size:15px}
+  #topbar{padding-left:9px}
+  #hint{bottom:calc(43vh + 18px);font-size:10px}
+  body.cardboard #editor{display:none}
 }
 </style>
 
-<!-- Three.js -->
 <script type="importmap">
 {
   "imports": {
     "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    "@supabase/supabase-js": "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm"
   }
 }
 </script>
 </head>
 
 <body>
-<div id="nameGate">
-  <div id="nameCard">
-    <h1>🎂 Cake Share</h1>
-    <p>ケーキをデコレーションして、みんなで共有しよう。</p>
-    <label for="editorName">あなたの名前</label>
-    <input id="editorName" maxlength="24" placeholder="ニックネーム">
-    <button class="primary" id="enterButton" style="width:100%;margin-top:14px">
-      はじめる
-    </button>
+<div id="stage"></div>
+
+<header id="topbar">
+  <div class="brand">🎄 Christmas Cake Studio</div>
+  <div id="status">オフラインモード</div>
+  <div style="flex:1"></div>
+  <button class="gold" id="shareBtn">共有</button>
+</header>
+
+<aside id="editor">
+  <div class="section">
+    <h3>🎂 ケーキ設定</h3>
+    <label>ケーキの名前</label>
+    <input id="cakeName" maxlength="32" placeholder="My Christmas Cake">
+    <label>作成者名</label>
+    <input id="userName" maxlength="20" placeholder="名前">
+    <label>ケーキの味</label>
+    <select id="flavor">
+      <option value="strawberry">🍓 いちご</option>
+      <option value="chocolate">🍫 チョコレート</option>
+      <option value="matcha">🍵 抹茶</option>
+      <option value="blueberry">🫐 ブルーベリー</option>
+    </select>
+    <div class="grid2">
+      <button id="applyFlavor">味を適用</button>
+      <button id="resetCake">ケーキを初期化</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>🎨 カラー編集</h3>
+    <label>クリーム</label>
+    <input type="color" id="creamColor" value="#fff0d6">
+    <label>スポンジ</label>
+    <input type="color" id="spongeColor" value="#e7ad65">
+    <label>チョコレート</label>
+    <input type="color" id="chocoColor" value="#59301e">
+    <label>メッセージ文字色</label>
+    <input type="color" id="messageColor" value="#b52f37">
+    <button id="applyColors" style="width:100%;margin-top:8px">色を適用</button>
+  </div>
+
+  <div class="section">
+    <h3>✍️ ケーキのメッセージ</h3>
+    <input id="messageText" maxlength="32" placeholder="Merry Christmas!">
+    <button id="applyMessage" style="width:100%;margin-top:7px">メッセージを書く</button>
+  </div>
+
+  <div class="section">
+    <h3>🍓 デコレーションを追加</h3>
+    <div class="grid2">
+      <button data-add="strawberry">🍓 いちご</button>
+      <button data-add="candle">🕯️ ろうそく</button>
+      <button data-add="chocolate">🍫 チョコ</button>
+      <button data-add="star">⭐ 星</button>
+      <button data-add="candy">🍬 キャンディ</button>
+      <button data-add="gift">🎁 ギフト</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>🛠️ 選択中のオブジェクト</h3>
+    <div class="small" id="selectedInfo">オブジェクトをタップして選択</div>
+    <div class="grid2" style="margin-top:8px">
+      <button data-move="left">← 左</button>
+      <button data-move="right">右 →</button>
+      <button data-move="forward">↑ 奥</button>
+      <button data-move="back">↓ 手前</button>
+      <button data-move="up">上</button>
+      <button data-move="down">下</button>
+      <button id="rotateLeft">↶ 回転</button>
+      <button id="rotateRight">↷ 回転</button>
+    </div>
+    <button id="deleteObject" class="primary" style="width:100%;margin-top:8px">選択オブジェクトを削除</button>
+  </div>
+
+  <div class="section">
+    <h3>↩️ 編集履歴</h3>
+    <div class="grid2">
+      <button id="undoBtn">元に戻す</button>
+      <button id="redoBtn">やり直す</button>
+    </div>
+    <div id="history" style="margin-top:8px">編集履歴はありません</div>
+  </div>
+
+  <div class="section">
+    <h3>🏠 クリスマスの背景</h3>
+    <select id="background">
+      <option value="classic">🎄 クラシックな部屋</option>
+      <option value="snow">❄️ 雪降る夜</option>
+      <option value="nordic">🕯️ 北欧の部屋</option>
+      <option value="party">🎉 クリスマスパーティー</option>
+      <option value="night">🌌 星空</option>
+    </select>
+    <button id="applyBackground" style="width:100%;margin-top:7px">背景を変更</button>
+  </div>
+
+  <div class="section">
+    <h3>🥽 VR・ジャイロ</h3>
+    <button id="gyroBtn" style="width:100%">ジャイロを有効化</button>
+    <button id="cardboardBtn" style="width:100%;margin-top:7px">Cardboardモード</button>
+    <button id="xrBtn" style="width:100%;margin-top:7px">WebXR VRを開始</button>
+    <div class="small" style="margin-top:7px">
+      ※ジャイロはHTTPS環境が必要です。iPhoneでは許可画面が表示される場合があります。
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>☁️ データ共有</h3>
+    <div class="small" id="dbStatus">ローカル保存を使用しています</div>
+    <button id="saveBtn" style="width:100%;margin-top:7px">手動保存</button>
+    <button id="syncBtn" style="width:100%;margin-top:7px">同期</button>
+  </div>
+
+  <div class="section">
+    <h3>👥 編集者</h3>
+    <div id="history"></div>
+    <div class="small">同じ共有URLを開いたユーザーと編集内容を共有できます。</div>
+  </div>
+</aside>
+
+<div id="musicPanel">
+  <div style="font-weight:700;color:var(--gold)">🎵 Christmas BGM</div>
+  <div class="small">Oh, Little Town of Bethlehem</div>
+  <div class="row" style="margin-top:7px">
+    <button id="musicToggle">▶ 再生</button>
+    <button id="musicMute">🔊</button>
+  </div>
+  <label>音量</label>
+  <input type="range" id="musicVolume" min="0" max="1" step="0.01" value="0.35">
+  <div class="small">
+    Kevin MacLeod / CC BY 3.0<br>
+    <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" style="color:#e8c879">ライセンス</a>
+    ・<a href="https://incompetech.com/" target="_blank" style="color:#e8c879">作者サイト</a>
   </div>
 </div>
 
-<div id="app">
-  <aside id="editor">
-    <h1>🎂 Cake Share</h1>
-    <small>みんなで作る3Dクリスマスケーキ</small>
+<button id="vrExit">VRを終了</button>
+<div id="hint">ドラッグで視点移動・ケーキをタップしてデコレーションを選択</div>
+<div id="toast"></div>
 
-    <div class="group">
-      <label>ケーキの名前</label>
-      <input id="cakeName" maxlength="40" value="クリスマスケーキ">
-      <button id="renameButton" class="primary" style="width:100%;margin-top:8px">
-        名前を変更
-      </button>
-      <button id="shareButton" style="width:100%;margin-top:8px">
-        🔗 共有リンクをコピー
-      </button>
-    </div>
-
-    <h2>ケーキのデザイン</h2>
-    <div class="group">
-      <label>味のプリセット</label>
-      <select id="flavor">
-        <option value="strawberry">🍓 いちご</option>
-        <option value="chocolate">🍫 チョコレート</option>
-        <option value="matcha">🍵 抹茶</option>
-        <option value="blueberry">🫐 ブルーベリー</option>
-      </select>
-
-      <label>クリームの色</label>
-      <input type="color" id="creamColor" value="#fff1e8">
-
-      <label>スポンジの色</label>
-      <input type="color" id="spongeColor" value="#e9ad67">
-
-      <label>メッセージチョコの色</label>
-      <input type="color" id="chocoColor" value="#6b352d">
-
-      <label>ケーキのメッセージ</label>
-      <input id="cakeMessage" maxlength="32" placeholder="Merry Christmas!">
-      <button id="messageButton" style="width:100%;margin-top:8px">
-        メッセージを反映
-      </button>
-    </div>
-
-    <h2>デコレーション</h2>
-    <div class="group grid2">
-      <button data-add="strawberry">🍓 いちご</button>
-      <button data-add="candle">🕯️ キャンドル</button>
-      <button data-add="chocolate">🍫 チョコ</button>
-      <button data-add="star">⭐ 星</button>
-    </div>
-
-    <h2>選択中のオブジェクト</h2>
-    <div class="group">
-      <div class="grid2">
-        <button data-move="left">← 左</button>
-        <button data-move="right">右 →</button>
-        <button data-move="front">手前</button>
-        <button data-move="back">奥</button>
-        <button data-move="up">上</button>
-        <button data-move="down">下</button>
-      </div>
-      <div class="grid2" style="margin-top:8px">
-        <button id="rotateButton">↻ 回転</button>
-        <button id="deleteButton" class="danger">削除</button>
-      </div>
-      <small>オブジェクトをタップして選択できます。</small>
-    </div>
-
-    <h2>背景</h2>
-    <div class="group">
-      <select id="room">
-        <option value="classic">🎄 クリスマスの部屋</option>
-        <option value="snow">❄️ 雪の降る夜</option>
-        <option value="nordic">🪵 北欧の部屋</option>
-        <option value="party">🎉 パーティールーム</option>
-        <option value="night">🌌 星空の部屋</option>
-      </select>
-    </div>
-
-    <h2>操作</h2>
-    <div class="group grid2">
-      <button id="undoButton">↶ Undo</button>
-      <button id="redoButton">↷ Redo</button>
-      <button id="saveButton">💾 保存</button>
-      <button id="vrButton" class="primary">🥽 Cardboard</button>
-    </div>
-
-    <div class="group">
-      <button id="gyroButton" style="width:100%">📱 ジャイロ操作</button>
-      <button id="xrButton" style="width:100%;margin-top:8px">VRモード（WebXR）</button>
-    </div>
-
-    <div id="status">ローカル保存モード</div>
-  </aside>
-
-  <main id="stage">
-    <canvas id="scene"></canvas>
-    <div id="topbar">
-      <div id="cakeTitle">🎂 クリスマスケーキ</div>
-      <small>CAKE SHARE</small>
-    </div>
-    <div id="hint">ドラッグで視点移動・タップでデコレーションを選択</div>
-    <button id="vrExit">Cardboardを終了</button>
-  </main>
+<div id="modal">
+  <div id="modalBox">
+    <h2>🎄 Christmas Cake Studio</h2>
+    <p>クリスマスケーキを自由にデコレーションしよう！</p>
+    <label>あなたの名前</label>
+    <input id="firstName" maxlength="20" placeholder="名前を入力">
+    <button id="startBtn" class="primary" style="width:100%;margin-top:14px">スタート！</button>
+    <p class="small">開始後、画面右上の再生ボタンからBGMを再生できます。</p>
+  </div>
 </div>
 
-<div id="toast"></div>
+<audio id="bgm"
+  src="https://incompetech.com/music/royalty-free/mp3-royaltyfree/Bethlehem.mp3"
+  preload="none" loop></audio>
 
 <script type="module">
 import * as THREE from "three";
+import { createClient } from "@supabase/supabase-js";
 
 /* =========================================================
    Supabase設定
-   URLと公開用キーをここに埋め込む。
-   service_role / secret key は絶対に使用しない。
+   空欄なら自動的にローカルモードになります。
+   公開用 anon / publishable key のみ設定してください。
 ========================================================= */
 const SUPABASE_URL = "";
 const SUPABASE_ANON_KEY = "";
+const TABLE_NAME = "cake_share_states";
 
 /* =========================================================
    基本設定
 ========================================================= */
-const $ = id => document.getElementById(id);
-const canvas = $("scene");
-
 const params = new URLSearchParams(location.search);
 const cakeId = params.get("cake") || crypto.randomUUID();
+
 if (!params.has("cake")) {
   params.set("cake", cakeId);
-  history.replaceState(null, "", location.pathname + "?" + params);
+  history.replaceState(null, "", `${location.pathname}?${params}`);
 }
 
-let editorName = "";
-let cakeTitle = "クリスマスケーキ";
+const $ = id => document.getElementById(id);
+const stage = $("stage");
+
+let userName = "";
+let cakeName = "My Christmas Cake";
 let selectedObject = null;
 let decorations = [];
-let undoStack = [];
-let redoStack = [];
-let lastSnapshot = "";
+let editorHistory = [];
+let historyIndex = -1;
+let historyLock = false;
+let lastRemoteUpdate = 0;
 let supabase = null;
 let realtimeChannel = null;
-let applyingRemote = false;
+let remoteApplying = false;
 let saveTimer = null;
-let cardboardMode = false;
+
 let gyroEnabled = false;
+let gyroSource = null;
+let gyroReferenceQuaternion = null;
+let gyroBaseQuaternion = null;
+let gyroCurrentQuaternion = new THREE.Quaternion();
+let gyroDeltaQuaternion = new THREE.Quaternion();
+let gyroNeedsReference = true;
 let xrSession = null;
+let cardboardMode = false;
 
-const defaultState = {
-  title: cakeTitle,
-  flavor: "strawberry",
-  cream: "#fff1e8",
-  sponge: "#e9ad67",
-  chocolate: "#6b352d",
-  message: "",
-  room: "classic",
-  decorations: []
-};
+const gyroEuler = new THREE.Euler();
+const gyroQ1 = new THREE.Quaternion();
+const gyroQ0 = new THREE.Quaternion();
+const AXIS_X = new THREE.Vector3(1,0,0);
+const AXIS_Z = new THREE.Vector3(0,0,1);
 
-let state = structuredClone(defaultState);
-
-function toast(message) {
-  const el = $("toast");
-  el.textContent = message;
-  el.classList.add("show");
-  setTimeout(() => el.classList.remove("show"), 2200);
-}
-
-function setStatus(message) {
-  $("status").textContent = message;
-}
-
-/* =========================================================
-   名前入力
-========================================================= */
-$("enterButton").addEventListener("click", () => {
-  const name = $("editorName").value.trim();
-  if (!name) {
-    toast("名前を入力してください");
-    return;
-  }
-  editorName = name;
-  sessionStorage.setItem("cakeShareName", name);
-  $("nameGate").style.display = "none";
-  initializeHistory();
-});
-
-const storedName = sessionStorage.getItem("cakeShareName");
-if (storedName) {
-  editorName = storedName;
-  $("editorName").value = storedName;
-  $("nameGate").style.display = "none";
-  initializeHistory();
-}
-
-/* =========================================================
-   Three.js シーン
-========================================================= */
 const scene = new THREE.Scene();
-scene.background = new THREE.Color("#18263b");
-
 const camera = new THREE.PerspectiveCamera(
-  45, 1, 0.1, 100
+  45, innerWidth / innerHeight, 0.1, 100
 );
-camera.position.set(0, 3.2, 7.5);
-camera.lookAt(0, 1, 0);
+camera.position.set(0,2.4,7);
+camera.lookAt(0,1.2,0);
 
 const renderer = new THREE.WebGLRenderer({
-  canvas,
-  antialias: true,
-  alpha: false
+  antialias:true,
+  alpha:false,
+  powerPreference:"high-performance"
 });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+stage.appendChild(renderer.domElement);
 
-scene.add(new THREE.HemisphereLight(0xffffff, 0x536078, 2));
+scene.add(new THREE.HemisphereLight(0xffe8c8,0x243d30,2.0));
 
-const keyLight = new THREE.DirectionalLight(0xffe4c8, 3);
-keyLight.position.set(4, 8, 5);
-keyLight.castShadow = true;
+const keyLight = new THREE.DirectionalLight(0xffe4b5,3);
+keyLight.position.set(4,8,5);
 scene.add(keyLight);
 
-const fillLight = new THREE.PointLight(0x8dbbff, 35, 20);
-fillLight.position.set(-4, 3, -3);
+const fillLight = new THREE.PointLight(0x8dbbff,30,20);
+fillLight.position.set(-4,4,-3);
 scene.add(fillLight);
 
 const cakeGroup = new THREE.Group();
 scene.add(cakeGroup);
 
-const roomGroup = new THREE.Group();
-scene.add(roomGroup);
-
 const decorationGroup = new THREE.Group();
 scene.add(decorationGroup);
+
+const environmentGroup = new THREE.Group();
+scene.add(environmentGroup);
 
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 
-function material(color, roughness = .65, metalness = 0) {
-  return new THREE.MeshStandardMaterial({
-    color,
-    roughness,
-    metalness
-  });
+const clock = new THREE.Clock();
+
+/* =========================================================
+   色・味
+========================================================= */
+const flavorColors = {
+  strawberry:{cream:"#fff0d6",sponge:"#e7ad65",choco:"#59301e"},
+  chocolate:{cream:"#d7b89c",sponge:"#75432e",choco:"#32170f"},
+  matcha:{cream:"#e6edcf",sponge:"#a5ad67",choco:"#4d4828"},
+  blueberry:{cream:"#e5ddf8",sponge:"#b7a0d5",choco:"#41315f"}
+};
+
+function colorHex(value) {
+  return new THREE.Color(value);
 }
 
-function makeCylinder(radiusTop, radiusBottom, height, color, y) {
-  const mesh = new THREE.Mesh(
-    new THREE.CylinderGeometry(radiusTop, radiusBottom, height, 64),
-    material(color)
-  );
-  mesh.position.y = y;
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
-  return mesh;
+function makeMaterial(color, roughness=.7) {
+  return new THREE.MeshStandardMaterial({
+    color,roughness,metalness:0.02
+  });
 }
 
 /* =========================================================
    ケーキ生成
 ========================================================= */
+let cakeMaterials = {};
+let cakeMessage = null;
+
+function disposeObject(object) {
+  object.traverse(child => {
+    if (!child.isMesh) return;
+    child.geometry?.dispose();
+    if (Array.isArray(child.material)) {
+      child.material.forEach(m => m.dispose());
+    } else {
+      child.material?.dispose();
+    }
+  });
+}
+
 function clearGroup(group) {
   while (group.children.length) {
-    const obj = group.children.pop();
-    obj.geometry?.dispose();
-    if (Array.isArray(obj.material)) {
-      obj.material.forEach(m => m.dispose());
-    } else {
-      obj.material?.dispose();
-    }
+    const object = group.children[0];
+    group.remove(object);
+    disposeObject(object);
   }
 }
 
-function buildCake() {
+function createCake() {
   clearGroup(cakeGroup);
 
-  cakeGroup.add(makeCylinder(1.35, 1.35, .16, "#d7dce5", .08));
-  cakeGroup.add(makeCylinder(1.12, 1.12, .55, state.sponge, .43));
-  cakeGroup.add(makeCylinder(1.16, 1.16, .12, state.cream, .76));
-  cakeGroup.add(makeCylinder(1.05, 1.05, .48, state.sponge, 1.06));
-  cakeGroup.add(makeCylinder(1.10, 1.10, .13, state.cream, 1.36));
+  const cream = $("creamColor").value;
+  const sponge = $("spongeColor").value;
+  const choco = $("chocoColor").value;
 
-  // 上面のクリーム
-  const top = new THREE.Mesh(
-    new THREE.CylinderGeometry(1.1, 1.1, .08, 64),
-    material(state.cream)
+  cakeMaterials = {
+    cream:makeMaterial(cream),
+    sponge:makeMaterial(sponge),
+    choco:makeMaterial(choco)
+  };
+
+  function cylinder(radiusTop,radiusBottom,height,y,material,segments=64) {
+    const mesh = new THREE.Mesh(
+      new THREE.CylinderGeometry(radiusTop,radiusBottom,height,segments),
+      material
+    );
+    mesh.position.y = y;
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    cakeGroup.add(mesh);
+    return mesh;
+  }
+
+  // 下段スポンジ
+  cylinder(1.55,1.55,.65,.55,cakeMaterials.sponge);
+  // 下段クリーム
+  cylinder(1.58,1.58,.16,.94,cakeMaterials.cream);
+  // 上段スポンジ
+  cylinder(1.12,1.12,.55,1.29,cakeMaterials.sponge);
+  // 上段クリーム
+  cylinder(1.15,1.15,.14,1.63,cakeMaterials.cream);
+
+  // 側面のクリームライン
+  for (let i=0;i<32;i++) {
+    const a=i/32*Math.PI*2;
+    const dot=new THREE.Mesh(
+      new THREE.SphereGeometry(.055,12,12),
+      cakeMaterials.cream
+    );
+    dot.position.set(Math.cos(a)*1.57,.96,Math.sin(a)*1.57);
+    cakeGroup.add(dot);
+  }
+
+  // 上段のクリーム飾り
+  for(let i=0;i<12;i++){
+    const a=i/12*Math.PI*2;
+    const creamDot=new THREE.Mesh(
+      new THREE.SphereGeometry(.105,16,16),
+      cakeMaterials.cream
+    );
+    creamDot.position.set(
+      Math.cos(a)*1.02,1.76,Math.sin(a)*1.02
+    );
+    cakeGroup.add(creamDot);
+  }
+
+  // メッセージ板
+  const plate=new THREE.Mesh(
+    new THREE.CylinderGeometry(.55,.55,.035,48),
+    makeMaterial("#fff8e8")
   );
-  top.position.y = 1.47;
-  top.castShadow = true;
-  cakeGroup.add(top);
+  plate.position.y=1.75;
+  cakeGroup.add(plate);
 
-  // クリームの絞り
-  for (let i = 0; i < 14; i++) {
-    const a = i / 14 * Math.PI * 2;
-    const cream = new THREE.Mesh(
-      new THREE.SphereGeometry(.12, 18, 14),
-      material(state.cream)
-    );
-    cream.position.set(
-      Math.cos(a) * .88,
-      1.57,
-      Math.sin(a) * .88
-    );
-    cream.scale.y = 1.2;
-    cakeGroup.add(cream);
+  updateMessageTexture();
+}
+
+function updateMessageTexture() {
+  if(cakeMessage){
+    cakeMessage.dispose();
+    cakeMessage=null;
+  }
+  const canvas=document.createElement("canvas");
+  canvas.width=512;canvas.height=256;
+  const ctx=canvas.getContext("2d");
+  ctx.clearRect(0,0,512,256);
+  ctx.fillStyle=$("messageColor").value;
+  ctx.font="bold 48px sans-serif";
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+  ctx.fillText($("messageText").value || "Merry Christmas!",256,128,480);
+
+  cakeMessage=new THREE.CanvasTexture(canvas);
+  cakeMessage.colorSpace=THREE.SRGBColorSpace;
+
+  const old=cakeGroup.getObjectByName("cakeMessage");
+  if(old){
+    old.geometry.dispose();
+    old.material.dispose();
+    cakeGroup.remove(old);
   }
 
-  // メッセージプレート
-  if (state.message) {
-    const textureCanvas = document.createElement("canvas");
-    textureCanvas.width = 1024;
-    textureCanvas.height = 256;
-    const ctx = textureCanvas.getContext("2d");
-    ctx.clearRect(0, 0, 1024, 256);
-    ctx.fillStyle = state.chocolate;
-    ctx.font = "bold 100px sans-serif";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(state.message, 512, 128, 950);
-
-    const texture = new THREE.CanvasTexture(textureCanvas);
-    const sign = new THREE.Mesh(
-      new THREE.PlaneGeometry(1.8, .45),
-      new THREE.MeshStandardMaterial({
-        map: texture,
-        transparent: true,
-        side: THREE.DoubleSide
-      })
-    );
-    sign.position.set(0, 1.78, .03);
-    cakeGroup.add(sign);
-  }
-
-  rebuildDecorations();
+  const plane=new THREE.Mesh(
+    new THREE.PlaneGeometry(.85,.42),
+    new THREE.MeshBasicMaterial({
+      map:cakeMessage,transparent:true,side:THREE.DoubleSide
+    })
+  );
+  plane.name="cakeMessage";
+  plane.rotation.x=-Math.PI/2;
+  plane.position.y=1.78;
+  cakeGroup.add(plane);
 }
 
 /* =========================================================
    デコレーション
 ========================================================= */
-function createDecoration(type, position) {
-  const group = new THREE.Group();
-  group.userData.decoration = true;
-  group.userData.type = type;
-  group.position.copy(position);
+function makeDecoration(type) {
+  const group=new THREE.Group();
+  group.userData.type=type;
+  group.userData.id=crypto.randomUUID();
 
-  if (type === "strawberry") {
-    const berry = new THREE.Mesh(
-      new THREE.SphereGeometry(.17, 24, 18),
-      material("#e52f50", .35)
+  const mat=(color,metalness=0)=>new THREE.MeshStandardMaterial({
+    color,roughness:.4,metalness
+  });
+
+  if(type==="strawberry"){
+    const berry=new THREE.Mesh(
+      new THREE.SphereGeometry(.18,20,16),
+      mat("#d92738")
     );
-    berry.scale.set(.85, 1.15, .85);
-    berry.castShadow = true;
+    berry.scale.set(.8,1.2,.8);
     group.add(berry);
 
-    for (let i = 0; i < 5; i++) {
-      const leaf = new THREE.Mesh(
-        new THREE.ConeGeometry(.055, .18, 8),
-        material("#43a66a")
-      );
-      const a = i / 5 * Math.PI * 2;
-      leaf.position.set(Math.cos(a) * .08, .17, Math.sin(a) * .08);
-      leaf.rotation.z = -.5;
-      group.add(leaf);
-    }
+    const leaf=new THREE.Mesh(
+      new THREE.ConeGeometry(.09,.18,6),
+      mat("#2c8b45")
+    );
+    leaf.position.y=.2;
+    group.add(leaf);
   }
 
-  if (type === "candle") {
-    const body = new THREE.Mesh(
-      new THREE.CylinderGeometry(.045, .045, .48, 16),
-      material("#fff0d2")
+  if(type==="candle"){
+    const body=new THREE.Mesh(
+      new THREE.CylinderGeometry(.045,.045,.48,16),
+      mat("#fff0ce")
     );
-    body.position.y = .24;
     group.add(body);
 
-    const flame = new THREE.Mesh(
-      new THREE.ConeGeometry(.07, .2, 16),
-      new THREE.MeshBasicMaterial({ color: "#ffb52e" })
+    const flame=new THREE.Mesh(
+      new THREE.SphereGeometry(.075,12,12),
+      new THREE.MeshBasicMaterial({color:"#ff9d27"})
     );
-    flame.position.y = .58;
+    flame.scale.set(.65,1.5,.65);
+    flame.position.y=.3;
     group.add(flame);
   }
 
-  if (type === "chocolate") {
-    const bar = new THREE.Mesh(
-      new THREE.BoxGeometry(.34, .12, .24),
-      material(state.chocolate, .3)
+  if(type==="chocolate"){
+    const body=new THREE.Mesh(
+      new THREE.BoxGeometry(.35,.12,.24),
+      mat("#4b2118")
     );
-    bar.position.y = .06;
-    group.add(bar);
+    group.add(body);
+    const stripe=new THREE.Mesh(
+      new THREE.BoxGeometry(.37,.025,.04),
+      mat("#e8c879")
+    );
+    stripe.position.y=.075;
+    group.add(stripe);
   }
 
-  if (type === "star") {
-    const star = new THREE.Mesh(
-      new THREE.OctahedronGeometry(.18, 0),
-      new THREE.MeshStandardMaterial({
-        color: "#ffd45c",
-        metalness: .55,
-        roughness: .25,
-        emissive: "#553500"
-      })
+  if(type==="star"){
+    const starShape=new THREE.Shape();
+    for(let i=0;i<10;i++){
+      const r=i%2===0?.22:.1;
+      const a=Math.PI/2+i*Math.PI/5;
+      const x=Math.cos(a)*r,y=Math.sin(a)*r;
+      if(i===0)starShape.moveTo(x,y);
+      else starShape.lineTo(x,y);
+    }
+    starShape.closePath();
+    const star=new THREE.Mesh(
+      new THREE.ExtrudeGeometry(starShape,{
+        depth:.06,bevelEnabled:true,bevelThickness:.02,bevelSize:.02
+      }),
+      mat("#f3c84f",.35)
     );
     group.add(star);
   }
 
-  group.traverse(o => {
-    if (o.isMesh) {
-      o.castShadow = true;
-      o.userData.parentDecoration = group;
-    }
+  if(type==="candy"){
+    const candy=new THREE.Mesh(
+      new THREE.TorusGeometry(.14,.055,12,24),
+      mat("#e9e2d4")
+    );
+    group.add(candy);
+    const stripe=new THREE.Mesh(
+      new THREE.TorusGeometry(.14,.018,8,24),
+      mat("#c93642")
+    );
+    stripe.rotation.z=.4;
+    group.add(stripe);
+  }
+
+  if(type==="gift"){
+    const box=new THREE.Mesh(
+      new THREE.BoxGeometry(.3,.27,.3),
+      mat("#b72e3b")
+    );
+    group.add(box);
+    const ribbon=new THREE.Mesh(
+      new THREE.BoxGeometry(.06,.29,.32),
+      mat("#e8c879",.5)
+    );
+    group.add(ribbon);
+    const ribbon2=new THREE.Mesh(
+      new THREE.BoxGeometry(.32,.29,.06),
+      mat("#e8c879",.5)
+    );
+    group.add(ribbon2);
+  }
+
+  group.traverse(o=>{
+    if(o.isMesh){o.castShadow=true;o.userData.parentDecoration=group;}
   });
 
-  decorationGroup.add(group);
-  decorations.push(group);
   return group;
 }
 
-function rebuildDecorations() {
-  clearGroup(decorationGroup);
-  decorations = [];
+function addDecoration(type,position) {
+  const obj=makeDecoration(type);
+  obj.position.copy(position || new THREE.Vector3(
+    (Math.random()-.5)*1.4,
+    1.95,
+    (Math.random()-.5)*1.4
+  ));
+  decorationGroup.add(obj);
+  selectedObject=obj;
+  updateSelectedInfo();
+  commitChange(`${type}を追加`);
+}
 
-  for (const item of state.decorations) {
-    const obj = createDecoration(
-      item.type,
-      new THREE.Vector3(item.x, item.y, item.z)
+function getDecorationFromObject(object) {
+  let current=object;
+  while(current && current!==scene){
+    if(current.parent===decorationGroup)return current;
+    current=current.parent;
+  }
+  return null;
+}
+
+/* =========================================================
+   背景・クリスマスルーム
+========================================================= */
+let snowParticles=null;
+let starParticles=null;
+
+function createBackground(type) {
+  clearGroup(environmentGroup);
+  snowParticles=null;
+  starParticles=null;
+
+  scene.background=new THREE.Color(
+    type==="night"||type==="snow"?"#101c38":
+    type==="party"?"#28172b":"#172b22"
+  );
+
+  const floorColor={
+    classic:"#4b3024",
+    snow:"#17283c",
+    nordic:"#d7c8a8",
+    party:"#30213b",
+    night:"#11182e"
+  }[type];
+
+  const floor=new THREE.Mesh(
+    new THREE.PlaneGeometry(200,200),
+    new THREE.MeshStandardMaterial({
+      color:floorColor,roughness:.9
+    })
+  );
+  floor.rotation.x=-Math.PI/2;
+  floor.position.y=-.12;
+  environmentGroup.add(floor);
+
+  // 部屋の壁
+  if(["classic","nordic","party"].includes(type)){
+    const wallColor=type==="nordic"?"#d8c9ad":
+      type==="party"?"#392342":"#3d342a";
+    const wall=new THREE.Mesh(
+      new THREE.PlaneGeometry(30,15),
+      makeMaterial(wallColor)
     );
-    obj.rotation.y = item.ry || 0;
-    obj.scale.setScalar(item.scale || 1);
+    wall.position.set(0,7,-7);
+    environmentGroup.add(wall);
+  }
+
+  // クリスマスツリー
+  if(type!=="night"){
+    const tree=new THREE.Group();
+    const trunk=new THREE.Mesh(
+      new THREE.CylinderGeometry(.18,.25,.7,12),
+      makeMaterial("#684027")
+    );
+    trunk.position.y=.35;
+    tree.add(trunk);
+
+    for(let i=0;i<4;i++){
+      const cone=new THREE.Mesh(
+        new THREE.ConeGeometry(1.25-i*.22,1.5,32),
+        makeMaterial(i%2===0?"#1e7047":"#246b45")
+      );
+      cone.position.y=1.15+i*.72;
+      tree.add(cone);
+    }
+
+    const topper=new THREE.Mesh(
+      new THREE.SphereGeometry(.2,16,16),
+      new THREE.MeshStandardMaterial({
+        color:"#ffd45b",emissive:"#c98b14",emissiveIntensity:1.5
+      })
+    );
+    topper.position.y=4.2;
+    tree.add(topper);
+
+    // オーナメント
+    for(let i=0;i<24;i++){
+      const a=i*2.4;
+      const y=.9+(i%8)*.4;
+      const r=1.0-(y/5)*.6;
+      const ball=new THREE.Mesh(
+        new THREE.SphereGeometry(.075,12,12),
+        makeMaterial(["#d73542","#e8c879","#438bd0"][i%3])
+      );
+      ball.position.set(Math.cos(a)*r,y,Math.sin(a)*r);
+      tree.add(ball);
+    }
+    tree.position.set(-4,0,-2);
+    environmentGroup.add(tree);
+  }
+
+  // 窓・光
+  if(type==="classic"||type==="nordic"){
+    const windowFrame=new THREE.Mesh(
+      new THREE.BoxGeometry(2.4,2.7,.12),
+      makeMaterial("#5b3828")
+    );
+    windowFrame.position.set(4,3,-6.8);
+    environmentGroup.add(windowFrame);
+
+    const windowGlass=new THREE.Mesh(
+      new THREE.PlaneGeometry(2.15,2.45),
+      new THREE.MeshBasicMaterial({color:"#172a46"})
+    );
+    windowGlass.position.set(4,3,-6.72);
+    environmentGroup.add(windowGlass);
+  }
+
+  // 雪・星
+  const count=type==="snow"?900:type==="night"?500:250;
+  const positions=new Float32Array(count*3);
+
+  for(let i=0;i<count;i++){
+    positions[i*3]=(Math.random()-.5)*35;
+    positions[i*3+1]=Math.random()*15;
+    positions[i*3+2]=(Math.random()-.5)*30-4;
+  }
+
+  const geo=new THREE.BufferGeometry();
+  geo.setAttribute("position",new THREE.BufferAttribute(positions,3));
+
+  const points=new THREE.Points(
+    geo,
+    new THREE.PointsMaterial({
+      color:type==="night"?"#fff0ba":"#ffffff",
+      size:type==="night"?.045:.065,
+      transparent:true,opacity:.85
+    })
+  );
+  environmentGroup.add(points);
+
+  if(type==="snow")snowParticles=points;
+  else if(type==="night")starParticles=points;
+  else snowParticles=points;
+
+  // パーティーのガーランド
+  if(type==="party"){
+    for(let i=0;i<18;i++){
+      const bulb=new THREE.Mesh(
+        new THREE.SphereGeometry(.09,12,12),
+        new THREE.MeshBasicMaterial({
+          color:["#ff4242","#ffdc4b","#45d8ff","#7dff88"][i%4]
+        })
+      );
+      bulb.position.set(-5+i*.6,5+Math.sin(i*.4)*.35,-4);
+      environmentGroup.add(bulb);
+    }
   }
 }
 
+/* =========================================================
+   保存・履歴
+========================================================= */
 function serializeDecorations() {
-  return decorations.map(obj => ({
-    type: obj.userData.type,
-    x: obj.position.x,
-    y: obj.position.y,
-    z: obj.position.z,
-    ry: obj.rotation.y,
-    scale: obj.scale.x
+  return decorationGroup.children.map(obj=>({
+    type:obj.userData.type,
+    id:obj.userData.id,
+    position:obj.position.toArray(),
+    rotation:obj.rotation.toArray(),
+    scale:obj.scale.toArray()
   }));
 }
 
-/* =========================================================
-   背景
-========================================================= */
-function buildRoom() {
-  clearGroup(roomGroup);
-
-  const roomColors = {
-    classic: "#25364c",
-    snow: "#172b49",
-    nordic: "#8a7767",
-    party: "#382747",
-    night: "#101b38"
+function getState() {
+  return {
+    cakeId,
+    cakeName,
+    userName,
+    flavor:$("flavor").value,
+    cream:$("creamColor").value,
+    sponge:$("spongeColor").value,
+    choco:$("chocoColor").value,
+    messageColor:$("messageColor").value,
+    message:$("messageText").value,
+    background:$("background").value,
+    decorations:serializeDecorations(),
+    updatedAt:Date.now()
   };
-
-  scene.background = new THREE.Color(
-    roomColors[state.room] || roomColors.classic
-  );
-
-  const floor = new THREE.Mesh(
-    new THREE.PlaneGeometry(30, 30),
-    material(state.room === "nordic" ? "#a98d70" : "#34445b")
-  );
-  floor.rotation.x = -Math.PI / 2;
-  floor.position.y = -.02;
-  floor.receiveShadow = true;
-  roomGroup.add(floor);
-
-  // 壁
-  const wall = new THREE.Mesh(
-    new THREE.PlaneGeometry(30, 12),
-    material(roomColors[state.room])
-  );
-  wall.position.set(0, 5, -7);
-  roomGroup.add(wall);
-
-  // クリスマスツリー
-  const trunk = new THREE.Mesh(
-    new THREE.CylinderGeometry(.13, .18, .7, 16),
-    material("#765039")
-  );
-  trunk.position.set(-3, .35, -2);
-  roomGroup.add(trunk);
-
-  for (let i = 0; i < 3; i++) {
-    const tree = new THREE.Mesh(
-      new THREE.ConeGeometry(1.05 - i * .2, 1.55, 24),
-      material("#176747")
-    );
-    tree.position.set(-3, 1.15 + i * .75, -2);
-    roomGroup.add(tree);
-  }
-
-  const star = new THREE.Mesh(
-    new THREE.OctahedronGeometry(.22),
-    material("#ffd35b", .25, .4)
-  );
-  star.position.set(-3, 3.1, -2);
-  roomGroup.add(star);
-
-  // 雪・星の粒
-  if (state.room === "snow" || state.room === "night") {
-    const count = 450;
-    const positions = new Float32Array(count * 3);
-    for (let i = 0; i < count; i++) {
-      positions[i * 3] = (Math.random() - .5) * 18;
-      positions[i * 3 + 1] = Math.random() * 10;
-      positions[i * 3 + 2] = (Math.random() - .5) * 18;
-    }
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute(
-      "position",
-      new THREE.BufferAttribute(positions, 3)
-    );
-    const points = new THREE.Points(
-      geometry,
-      new THREE.PointsMaterial({
-        color: "#ffffff",
-        size: .045,
-        transparent: true,
-        opacity: .8
-      })
-    );
-    roomGroup.add(points);
-  }
 }
 
-/* =========================================================
-   味プリセット・UI
-========================================================= */
-const flavors = {
-  strawberry: ["#fff1e8", "#e9ad67", "#6b352d"],
-  chocolate: ["#8b5b4d", "#583b32", "#351b19"],
-  matcha: ["#b6c99a", "#d8b77b", "#45603b"],
-  blueberry: ["#c4c6f0", "#d5ad8c", "#403b70"]
-};
-
-$("flavor").addEventListener("change", () => {
-  const values = flavors[$("flavor").value];
-  state.flavor = $("flavor").value;
-  state.cream = values[0];
-  state.sponge = values[1];
-  state.chocolate = values[2];
-  syncInputs();
-  commitChange();
-});
-
-function syncInputs() {
-  $("creamColor").value = state.cream;
-  $("spongeColor").value = state.sponge;
-  $("chocoColor").value = state.chocolate;
-  $("flavor").value = state.flavor;
-  $("cakeName").value = state.title;
-  $("cakeMessage").value = state.message;
-  $("room").value = state.room;
-  $("cakeTitle").textContent = "🎂 " + state.title;
-}
-
-$("creamColor").addEventListener("input", () => {
-  state.cream = $("creamColor").value;
-  commitChange();
-});
-$("spongeColor").addEventListener("input", () => {
-  state.sponge = $("spongeColor").value;
-  commitChange();
-});
-$("chocoColor").addEventListener("input", () => {
-  state.chocolate = $("chocoColor").value;
-  commitChange();
-});
-$("room").addEventListener("change", () => {
-  state.room = $("room").value;
-  commitChange();
-});
-$("messageButton").addEventListener("click", () => {
-  state.message = $("cakeMessage").value.trim();
-  commitChange();
-});
-$("renameButton").addEventListener("click", () => {
-  state.title = $("cakeName").value.trim() || "Cake Share";
-  commitChange();
-});
-
-/* =========================================================
-   履歴・Undo / Redo
-========================================================= */
 function snapshot() {
-  state.decorations = serializeDecorations();
-  return JSON.stringify(state);
+  return JSON.stringify(getState());
 }
 
-function initializeHistory() {
-  if (!lastSnapshot) {
-    lastSnapshot = snapshot();
-    undoStack = [];
-    redoStack = [];
-  }
-}
+function applySnapshot(state) {
+  if(!state)return;
+  remoteApplying=true;
 
-function commitChange() {
-  if (applyingRemote) return;
+  cakeName=state.cakeName||"My Christmas Cake";
+  $("cakeName").value=cakeName;
+  $("flavor").value=state.flavor||"strawberry";
+  $("creamColor").value=state.cream||"#fff0d6";
+  $("spongeColor").value=state.sponge||"#e7ad65";
+  $("chocoColor").value=state.choco||"#59301e";
+  $("messageColor").value=state.messageColor||"#b52f37";
+  $("messageText").value=state.message||"";
+  $("background").value=state.background||"classic";
 
-  const previous = lastSnapshot;
-  const next = snapshot();
+  selectedObject=null;
+  createCake();
+  createBackground($("background").value);
+  clearGroup(decorationGroup);
 
-  if (previous !== next) {
-    undoStack.push(previous);
-    if (undoStack.length > 80) undoStack.shift();
-    redoStack = [];
-    lastSnapshot = next;
-  }
-
-  renderState();
-  saveLocal();
-  scheduleRemoteSave();
-  recordHistory();
-}
-
-function applySnapshot(value) {
-  applyingRemote = true;
-  state = JSON.parse(value);
-  cakeTitle = state.title;
-  syncInputs();
-  buildCake();
-  buildRoom();
-  lastSnapshot = snapshot();
-  applyingRemote = false;
-  saveLocal();
-}
-
-$("undoButton").addEventListener("click", () => {
-  if (!undoStack.length) return;
-  redoStack.push(snapshot());
-  applySnapshot(undoStack.pop());
-  scheduleRemoteSave();
-});
-
-$("redoButton").addEventListener("click", () => {
-  if (!redoStack.length) return;
-  undoStack.push(snapshot());
-  applySnapshot(redoStack.pop());
-  scheduleRemoteSave();
-});
-
-function renderState() {
-  cakeTitle = state.title;
-  syncInputs();
-  buildCake();
-  buildRoom();
-}
-
-/* =========================================================
-   オブジェクト操作
-========================================================= */
-function addDecoration(type) {
-  const angle = Math.random() * Math.PI * 2;
-  const radius = .55 + Math.random() * .3;
-  const obj = createDecoration(
-    type,
-    new THREE.Vector3(
-      Math.cos(angle) * radius,
-      1.68,
-      Math.sin(angle) * radius
-    )
-  );
-  selectedObject = obj;
-  commitChange();
-}
-
-document.querySelectorAll("[data-add]").forEach(button => {
-  button.addEventListener("click", () => {
-    addDecoration(button.dataset.add);
+  (state.decorations||[]).forEach(data=>{
+    const obj=makeDecoration(data.type);
+    obj.userData.id=data.id||crypto.randomUUID();
+    obj.position.fromArray(data.position||[0,2,0]);
+    obj.rotation.fromArray(data.rotation||[0,0,0]);
+    obj.scale.fromArray(data.scale||[1,1,1]);
+    decorationGroup.add(obj);
   });
-});
 
-document.querySelectorAll("[data-move]").forEach(button => {
-  button.addEventListener("click", () => {
-    if (!selectedObject) {
-      toast("先にオブジェクトを選択してください");
-      return;
-    }
-    const step = .12;
-    const directions = {
-      left: [-step, 0, 0],
-      right: [step, 0, 0],
-      front: [0, 0, step],
-      back: [0, 0, -step],
-      up: [0, step, 0],
-      down: [0, -step, 0]
-    };
-    const d = directions[button.dataset.move];
-    selectedObject.position.x += d[0];
-    selectedObject.position.y += d[1];
-    selectedObject.position.z += d[2];
-    commitChange();
-  });
-});
+  remoteApplying=false;
+  updateSelectedInfo();
+}
 
-$("rotateButton").addEventListener("click", () => {
-  if (!selectedObject) return;
-  selectedObject.rotation.y += Math.PI / 8;
-  commitChange();
-});
+function updateHistoryUI() {
+  $("history").textContent=editorHistory
+    .slice(-5).map((x,i)=>`${i+1}. ${x.label}`).join("\n") || "編集履歴はありません";
+  $("undoBtn").disabled=historyIndex<=0;
+  $("redoBtn").disabled=historyIndex>=editorHistory.length-1;
+}
 
-$("deleteButton").addEventListener("click", () => {
-  if (!selectedObject) return;
-  decorationGroup.remove(selectedObject);
-  decorations = decorations.filter(x => x !== selectedObject);
-  selectedObject = null;
-  commitChange();
-});
+function commitChange(label) {
+  if(historyLock||remoteApplying)return;
+  const state=snapshot();
 
-/* =========================================================
-   ポインター・タッチ操作
-========================================================= */
-let pointerDown = null;
-let dragging = false;
-let previousPointer = { x: 0, y: 0 };
+  editorHistory=editorHistory.slice(0,historyIndex+1);
+  editorHistory.push({label,state});
+  if(editorHistory.length>40)editorHistory.shift();
+  historyIndex=editorHistory.length-1;
 
-canvas.addEventListener("pointerdown", event => {
-  pointerDown = { x: event.clientX, y: event.clientY };
-  previousPointer = { x: event.clientX, y: event.clientY };
-  dragging = false;
-  canvas.setPointerCapture(event.pointerId);
-});
+  updateHistoryUI();
+  scheduleSave();
+}
 
-canvas.addEventListener("pointermove", event => {
-  if (!pointerDown || cardboardMode || gyroEnabled) return;
+function restoreHistory(index) {
+  if(index<0||index>=editorHistory.length)return;
+  historyLock=true;
+  applySnapshot(JSON.parse(editorHistory[index].state));
+  historyIndex=index;
+  historyLock=false;
+  updateHistoryUI();
+  scheduleSave();
+}
 
-  const dx = event.clientX - previousPointer.x;
-  const dy = event.clientY - previousPointer.y;
-
-  if (Math.abs(event.clientX - pointerDown.x) > 5 ||
-      Math.abs(event.clientY - pointerDown.y) > 5) {
-    dragging = true;
-  }
-
-  if (dragging) {
-    camera.position.applyAxisAngle(
-      new THREE.Vector3(0, 1, 0),
-      -dx * .005
-    );
-    camera.position.y = THREE.MathUtils.clamp(
-      camera.position.y - dy * .012, 1.2, 7
-    );
-    camera.lookAt(0, 1, 0);
-  }
-
-  previousPointer = { x: event.clientX, y: event.clientY };
-});
-
-canvas.addEventListener("pointerup", event => {
-  if (!dragging && pointerDown) {
-    const rect = canvas.getBoundingClientRect();
-    pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-    pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-    raycaster.setFromCamera(pointer, camera);
-
-    const hits = raycaster.intersectObjects(
-      decorationGroup.children, true
-    );
-
-    if (hits.length) {
-      let target = hits[0].object;
-      while (target.parent && target.parent !== decorationGroup) {
-        target = target.parent;
-      }
-      selectedObject = target;
-      toast("オブジェクトを選択しました");
-    } else {
-      selectedObject = null;
-    }
-  }
-  pointerDown = null;
-});
+$("undoBtn").onclick=()=>restoreHistory(historyIndex-1);
+$("redoBtn").onclick=()=>restoreHistory(historyIndex+1);
 
 /* =========================================================
-   ローカル保存
+   ローカルストレージ
 ========================================================= */
-const storageKey = "cake-share-" + cakeId;
+const localKey=`cake-studio-${cakeId}`;
 
 function saveLocal() {
-  try {
-    localStorage.setItem(storageKey, snapshot());
-  } catch (error) {
-    console.warn(error);
-    toast("保存できませんでした");
+  try{
+    localStorage.setItem(localKey,JSON.stringify(getState()));
+    $("dbStatus").textContent="ローカル保存済み";
+  }catch(e){
+    $("dbStatus").textContent="保存できませんでした";
   }
 }
 
 function loadLocal() {
-  try {
-    const raw = localStorage.getItem(storageKey);
-    if (raw) {
-      state = JSON.parse(raw);
-      syncInputs();
-      buildCake();
-      buildRoom();
+  try{
+    const data=localStorage.getItem(localKey);
+    if(data){
+      applySnapshot(JSON.parse(data));
+      return true;
     }
-  } catch (error) {
-    console.warn("Local data load failed", error);
-  }
+  }catch(e){console.warn(e);}
+  return false;
 }
 
-$("saveButton").addEventListener("click", () => {
+function scheduleSave() {
   saveLocal();
-  toast("この端末に保存しました");
-});
-
-$("shareButton").addEventListener("click", async () => {
-  const url = new URL(location.href);
-  url.searchParams.set("cake", cakeId);
-
-  try {
-    await navigator.clipboard.writeText(url.href);
-    toast("共有リンクをコピーしました");
-  } catch {
-    prompt("共有リンクをコピーしてください", url.href);
-  }
-});
-
-/* =========================================================
-   編集履歴
-========================================================= */
-function recordHistory() {
-  if (!editorName) return;
-  const key = "cake-share-history-" + cakeId;
-  let history = [];
-  try {
-    history = JSON.parse(localStorage.getItem(key) || "[]");
-  } catch {}
-  history.unshift({
-    name: editorName,
-    time: new Date().toISOString(),
-    action: "編集"
-  });
-  history = history.slice(0, 100);
-  localStorage.setItem(key, JSON.stringify(history));
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(saveToSupabase,900);
 }
 
 /* =========================================================
-   Supabase（任意）
+   Supabase
 ========================================================= */
-async function connectSupabase() {
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    setStatus("ローカルモード：Supabase未設定");
+const supabaseConfigured=
+  SUPABASE_URL.trim()!=="" && SUPABASE_ANON_KEY.trim()!=="";
+
+async function initSupabase() {
+  if(!supabaseConfigured){
+    $("status").textContent="オフラインモード";
+    $("dbStatus").textContent="ローカル保存を使用しています";
     return;
   }
 
-  try {
-    const { createClient } = await import(
-      "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm"
-    );
-    supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  try{
+    supabase=createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+    $("status").textContent="Supabase接続中";
 
-    const { data, error } = await supabase
-      .from("cake_share_states")
+    const {data,error}=await supabase
+      .from(TABLE_NAME)
       .select("state")
-      .eq("cake_id", cakeId)
+      .eq("cake_id",cakeId)
       .maybeSingle();
 
-    if (error) throw error;
+    if(error)throw error;
 
-    if (data?.state) {
-      const remote = JSON.stringify(data.state);
-      if (remote !== lastSnapshot) {
-        applySnapshot(remote);
-      }
-    } else {
-      await uploadRemote();
+    if(data?.state){
+      applySnapshot(data.state);
+      saveLocal();
     }
 
-    realtimeChannel = supabase
-      .channel("cake-" + cakeId)
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "cake_share_states",
-          filter: "cake_id=eq." + cakeId
-        },
-        payload => {
-          if (!payload.new?.state) return;
-          const incoming = JSON.stringify(payload.new.state);
-          if (incoming !== lastSnapshot) {
-            applySnapshot(incoming);
-            toast("ほかの人の編集を受信しました");
-          }
+    realtimeChannel=supabase.channel(`cake-${cakeId}`)
+      .on("postgres_changes",{
+        event:"UPDATE",
+        schema:"public",
+        table:TABLE_NAME,
+        filter:`cake_id=eq.${cakeId}`
+      },payload=>{
+        const remote=payload.new?.state;
+        if(!remote)return;
+        if(remote.updatedAt && remote.updatedAt<=lastRemoteUpdate)return;
+        lastRemoteUpdate=remote.updatedAt||Date.now();
+        applySnapshot(remote);
+        saveLocal();
+        showToast("他のユーザーの編集を受信しました");
+      })
+      .on("postgres_changes",{
+        event:"INSERT",
+        schema:"public",
+        table:TABLE_NAME,
+        filter:`cake_id=eq.${cakeId}`
+      },payload=>{
+        const remote=payload.new?.state;
+        if(!remote)return;
+        applySnapshot(remote);
+        saveLocal();
+      })
+      .subscribe(status=>{
+        if(status==="SUBSCRIBED"){
+          $("status").textContent="☁️ オンライン同期中";
+          $("dbStatus").textContent="Supabaseリアルタイム同期が有効です";
         }
-      )
-      .subscribe();
+      });
 
-    setStatus("Supabase接続済み");
-  } catch (error) {
+  }catch(error){
     console.error(error);
-    setStatus("Supabase接続失敗：ローカルモードで動作中");
+    $("status").textContent="オフラインモード";
+    $("dbStatus").textContent="Supabase接続失敗。ローカル保存を継続します";
   }
 }
 
-async function uploadRemote() {
-  if (!supabase) return;
+async function saveToSupabase() {
+  if(!supabase)return;
 
-  const current = JSON.parse(snapshot());
+  const state=getState();
+  state.updatedAt=Date.now();
 
-  const { error } = await supabase
-    .from("cake_share_states")
-    .upsert({
-      cake_id: cakeId,
-      state: current,
-      updated_at: new Date().toISOString()
-    }, {
-      onConflict: "cake_id"
-    });
+  try{
+    const {error}=await supabase.from(TABLE_NAME).upsert({
+      cake_id:cakeId,
+      state,
+      updated_at:new Date().toISOString()
+    },{onConflict:"cake_id"});
 
-  if (error) {
-    console.error(error);
-    setStatus("同期エラー：ローカル保存は継続中");
+    if(error)throw error;
+    $("dbStatus").textContent="☁️ Supabase保存済み";
+  }catch(error){
+    console.warn(error);
+    $("dbStatus").textContent="オンライン保存失敗。ローカルには保存済み";
   }
 }
 
-function scheduleRemoteSave() {
-  if (!supabase) return;
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(uploadRemote, 500);
+$("saveBtn").onclick=async()=>{
+  saveLocal();
+  await saveToSupabase();
+  showToast("保存しました");
+};
+
+$("syncBtn").onclick=async()=>{
+  if(!supabase){
+    showToast("オフラインモードです");
+    return;
+  }
+  await saveToSupabase();
+  showToast("同期を実行しました");
+};
+
+/* =========================================================
+   共有URL
+========================================================= */
+$("shareBtn").onclick=async()=>{
+  const url=new URL(location.href);
+  url.searchParams.set("cake",cakeId);
+
+  try{
+    await navigator.clipboard.writeText(url.toString());
+    showToast("共有URLをコピーしました！");
+  }catch(e){
+    prompt("このURLをコピーしてください",url.toString());
+  }
+};
+
+/* =========================================================
+   編集UI
+========================================================= */
+$("applyFlavor").onclick=()=>{
+  const c=flavorColors[$("flavor").value];
+  $("creamColor").value=c.cream;
+  $("spongeColor").value=c.sponge;
+  $("chocoColor").value=c.choco;
+  createCake();
+  commitChange("ケーキの味を変更");
+};
+
+$("applyColors").onclick=()=>{
+  createCake();
+  commitChange("ケーキの色を変更");
+};
+
+$("applyMessage").onclick=()=>{
+  updateMessageTexture();
+  commitChange("メッセージを変更");
+};
+
+$("applyBackground").onclick=()=>{
+  createBackground($("background").value);
+  commitChange("背景を変更");
+};
+
+$("cakeName").addEventListener("change",()=>{
+  cakeName=$("cakeName").value||"My Christmas Cake";
+  commitChange("ケーキ名を変更");
+});
+
+document.querySelectorAll("[data-add]").forEach(button=>{
+  button.onclick=()=>addDecoration(button.dataset.add);
+});
+
+document.querySelectorAll("[data-move]").forEach(button=>{
+  button.onclick=()=>{
+    if(!selectedObject)return showToast("オブジェクトを選択してください");
+    const step=.12;
+    const key=button.dataset.move;
+    if(key==="left")selectedObject.position.x-=step;
+    if(key==="right")selectedObject.position.x+=step;
+    if(key==="forward")selectedObject.position.z-=step;
+    if(key==="back")selectedObject.position.z+=step;
+    if(key==="up")selectedObject.position.y+=step;
+    if(key==="down")selectedObject.position.y-=step;
+    commitChange("オブジェクトを移動");
+  };
+});
+
+$("rotateLeft").onclick=()=>{
+  if(!selectedObject)return;
+  selectedObject.rotation.y-=Math.PI/8;
+  commitChange("オブジェクトを回転");
+};
+
+$("rotateRight").onclick=()=>{
+  if(!selectedObject)return;
+  selectedObject.rotation.y+=Math.PI/8;
+  commitChange("オブジェクトを回転");
+};
+
+$("deleteObject").onclick=()=>{
+  if(!selectedObject)return;
+  decorationGroup.remove(selectedObject);
+  disposeObject(selectedObject);
+  selectedObject=null;
+  updateSelectedInfo();
+  commitChange("オブジェクトを削除");
+};
+
+$("resetCake").onclick=()=>{
+  if(!confirm("ケーキのデコレーションを初期化しますか？"))return;
+  clearGroup(decorationGroup);
+  selectedObject=null;
+  createCake();
+  updateSelectedInfo();
+  commitChange("ケーキを初期化");
+};
+
+function updateSelectedInfo() {
+  $("selectedInfo").textContent=selectedObject
+    ? `${selectedObject.userData.type} を選択中`
+    : "オブジェクトをタップして選択";
 }
 
 /* =========================================================
-   Cardboard レンズ向けステレオ表示
+   マウス・タッチ操作
 ========================================================= */
-let leftTarget, rightTarget;
-let vrScene, vrCamera;
-let leftCamera, rightCamera;
-let vrMaterial;
-let vrQuad;
-const IPD = 0.064;
-const LENS_STRENGTH = 0.22;
+let pointerDown=false;
+let pointerMoved=false;
+let pointerStart={x:0,y:0};
+let cameraYaw=0;
+let cameraPitch=0;
+let lastPointer={x:0,y:0};
 
-function setupCardboard() {
-  const width = Math.max(1, Math.floor(innerWidth / 2));
-  const height = Math.max(1, innerHeight);
+renderer.domElement.addEventListener("pointerdown",e=>{
+  pointerDown=true;
+  pointerMoved=false;
+  pointerStart={x:e.clientX,y:e.clientY};
+  lastPointer={x:e.clientX,y:e.clientY};
+  renderer.domElement.setPointerCapture(e.pointerId);
+});
 
-  leftTarget?.dispose();
-  rightTarget?.dispose();
+renderer.domElement.addEventListener("pointermove",e=>{
+  if(!pointerDown)return;
 
-  leftTarget = new THREE.WebGLRenderTarget(width, height);
-  rightTarget = new THREE.WebGLRenderTarget(width, height);
+  const dx=e.clientX-lastPointer.x;
+  const dy=e.clientY-lastPointer.y;
+  lastPointer={x:e.clientX,y:e.clientY};
 
-  leftCamera = camera.clone();
-  rightCamera = camera.clone();
-
-  const distortionVertex = `
-    varying vec2 vUv;
-    void main() {
-      vUv = uv;
-      gl_Position = vec4(position, 1.0);
-    }
-  `;
-
-  const distortionFragment = `
-    uniform sampler2D leftEye;
-    uniform sampler2D rightEye;
-    uniform float strength;
-    varying vec2 vUv;
-
-    vec2 distort(vec2 uv) {
-      vec2 centered = uv * 2.0 - 1.0;
-      float r2 = dot(centered, centered);
-      float factor = 1.0 + strength * r2;
-      return centered * factor * 0.5 + 0.5;
-    }
-
-    void main() {
-      bool isRight = vUv.x > 0.5;
-      vec2 localUv = vec2(
-        isRight ? (vUv.x - 0.5) * 2.0 : vUv.x * 2.0,
-        vUv.y
-      );
-
-      // 左右レンズそれぞれの中心を基準に補正
-      vec2 uv = distort(localUv);
-
-      // レンズ外周の黒いマスク
-      vec2 p = localUv * 2.0 - 1.0;
-      float radius = length(p);
-      if (radius > 1.0 || any(lessThan(uv, vec2(0.0))) ||
-          any(greaterThan(uv, vec2(1.0)))) {
-        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
-        return;
-      }
-
-      vec4 color = isRight
-        ? texture2D(rightEye, uv)
-        : texture2D(leftEye, uv);
-
-      float vignette = smoothstep(1.0, 0.72, radius);
-      gl_FragColor = vec4(color.rgb * vignette, 1.0);
-    }
-  `;
-
-  vrScene = new THREE.Scene();
-  vrCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-
-  vrMaterial = new THREE.ShaderMaterial({
-    uniforms: {
-      leftEye: { value: leftTarget.texture },
-      rightEye: { value: rightTarget.texture },
-      strength: { value: LENS_STRENGTH }
-    },
-    vertexShader: distortionVertex,
-    fragmentShader: distortionFragment,
-    depthTest: false,
-    depthWrite: false
-  });
-
-  vrQuad = new THREE.Mesh(
-    new THREE.PlaneGeometry(2, 2),
-    vrMaterial
-  );
-  vrScene.add(vrQuad);
-}
-
-function setEyeCameras() {
-  leftCamera.copy(camera);
-  rightCamera.copy(camera);
-
-  const rightVector = new THREE.Vector3(1, 0, 0)
-    .applyQuaternion(camera.quaternion);
-
-  leftCamera.position.addScaledVector(rightVector, -IPD / 2);
-  rightCamera.position.addScaledVector(rightVector, IPD / 2);
-
-  leftCamera.updateMatrixWorld();
-  rightCamera.updateMatrixWorld();
-}
-
-function renderCardboard() {
-  if (!leftTarget || !rightTarget) setupCardboard();
-
-  setEyeCameras();
-
-  renderer.setRenderTarget(leftTarget);
-  renderer.clear();
-  renderer.render(scene, leftCamera);
-
-  renderer.setRenderTarget(rightTarget);
-  renderer.clear();
-  renderer.render(scene, rightCamera);
-
-  renderer.setRenderTarget(null);
-  renderer.setScissorTest(false);
-  renderer.clear();
-  renderer.render(vrScene, vrCamera);
-}
-
-async function enterCardboard() {
-  if (cardboardMode) return;
-
-  cardboardMode = true;
-  document.body.classList.add("cardboard");
-
-  setupCardboard();
-  resize();
-
-  try {
-    if (typeof DeviceOrientationEvent !== "undefined" &&
-        typeof DeviceOrientationEvent.requestPermission === "function") {
-      const permission = await DeviceOrientationEvent.requestPermission();
-      if (permission !== "granted") {
-        toast("ジャイロの許可が必要です");
-      }
-    }
-    gyroEnabled = true;
-    window.addEventListener("deviceorientation", onDeviceOrientation, true);
-  } catch (error) {
-    console.warn(error);
-    toast("ジャイロを利用できません");
+  if(Math.abs(e.clientX-pointerStart.x)+Math.abs(e.clientY-pointerStart.y)>6){
+    pointerMoved=true;
   }
 
-  toast("Cardboard鑑賞モード");
+  if(!gyroEnabled && !cardboardMode && !xrSession){
+    cameraYaw-=dx*.004;
+    cameraPitch-=dy*.004;
+    cameraPitch=THREE.MathUtils.clamp(cameraPitch,-.8,.8);
+    updateCameraOrbit();
+  }
+});
+
+renderer.domElement.addEventListener("pointerup",e=>{
+  if(!pointerDown)return;
+  pointerDown=false;
+
+  if(!pointerMoved){
+    selectAt(e.clientX,e.clientY);
+  }
+});
+
+function updateCameraOrbit() {
+  const radius=7;
+  camera.position.set(
+    Math.sin(cameraYaw)*radius,
+    2.4+cameraPitch*3,
+    Math.cos(cameraYaw)*radius
+  );
+  camera.lookAt(0,1.2,0);
 }
 
-function exitCardboard() {
-  cardboardMode = false;
-  gyroEnabled = false;
-  document.body.classList.remove("cardboard");
-  window.removeEventListener("deviceorientation", onDeviceOrientation, true);
-  resize();
-  toast("通常編集モードに戻りました");
-}
+function selectAt(x,y) {
+  const rect=renderer.domElement.getBoundingClientRect();
+  pointer.x=((x-rect.left)/rect.width)*2-1;
+  pointer.y=-((y-rect.top)/rect.height)*2+1;
+  raycaster.setFromCamera(pointer,camera);
 
-$("vrButton").addEventListener("click", enterCardboard);
-$("vrExit").addEventListener("click", exitCardboard);
+  const hits=raycaster.intersectObjects(decorationGroup.children,true);
+  if(hits.length){
+    selectedObject=getDecorationFromObject(hits[0].object);
+    updateSelectedInfo();
+  }else{
+    selectedObject=null;
+    updateSelectedInfo();
+  }
+}
 
 /* =========================================================
    ジャイロ
 ========================================================= */
-function onDeviceOrientation(event) {
-  if (!gyroEnabled || event.alpha == null) return;
-
-  const alpha = THREE.MathUtils.degToRad(event.alpha);
-  const beta = THREE.MathUtils.degToRad(event.beta || 0);
-  const gamma = THREE.MathUtils.degToRad(event.gamma || 0);
-
-  const deviceEuler = new THREE.Euler(beta, alpha, -gamma, "YXZ");
-  const deviceQuaternion = new THREE.Quaternion()
-    .setFromEuler(deviceEuler);
-
-  const screenAngle = THREE.MathUtils.degToRad(
-    screen.orientation?.angle || 0
-  );
-  const screenQuaternion = new THREE.Quaternion()
-    .setFromAxisAngle(new THREE.Vector3(0, 0, 1), -screenAngle);
-
-  camera.quaternion.copy(deviceQuaternion).multiply(screenQuaternion);
+function getScreenAngle() {
+  return (screen.orientation?.angle ??
+    window.orientation ?? 0) * Math.PI / 180;
 }
 
-/* =========================================================
-   通常ジャイロ
-========================================================= */
-$("gyroButton").addEventListener("click", async () => {
-  if (gyroEnabled) {
-    gyroEnabled = false;
-    window.removeEventListener("deviceorientation", onDeviceOrientation, true);
-    toast("ジャイロを停止しました");
+function onDeviceOrientation(event) {
+  if(event.alpha===null||event.beta===null||event.gamma===null)return;
+
+  const alpha=THREE.MathUtils.degToRad(event.alpha);
+  const beta=THREE.MathUtils.degToRad(event.beta);
+  const gamma=THREE.MathUtils.degToRad(event.gamma);
+  const orient=getScreenAngle();
+
+  gyroEuler.set(beta,alpha,-gamma,"YXZ");
+  gyroCurrentQuaternion.setFromEuler(gyroEuler);
+  gyroCurrentQuaternion.multiply(
+    new THREE.Quaternion(-Math.sqrt(.5),0,0,Math.sqrt(.5))
+  );
+  gyroQ0.setFromAxisAngle(AXIS_Z,-orient);
+  gyroCurrentQuaternion.multiply(gyroQ0);
+
+  if(gyroNeedsReference || !gyroReferenceQuaternion){
+    gyroReferenceQuaternion=gyroCurrentQuaternion.clone();
+    gyroBaseQuaternion=camera.quaternion.clone();
+    gyroNeedsReference=false;
     return;
   }
 
-  try {
-    if (typeof DeviceOrientationEvent?.requestPermission === "function") {
-      const permission = await DeviceOrientationEvent.requestPermission();
-      if (permission !== "granted") return;
-    }
-    gyroEnabled = true;
-    window.addEventListener("deviceorientation", onDeviceOrientation, true);
-    toast("ジャイロを有効にしました");
-  } catch {
-    toast("この端末ではジャイロを利用できません");
+  gyroDeltaQuaternion.copy(gyroReferenceQuaternion).invert();
+  gyroDeltaQuaternion.multiply(gyroCurrentQuaternion);
+
+  camera.quaternion.copy(gyroBaseQuaternion);
+  camera.quaternion.multiply(gyroDeltaQuaternion);
+}
+
+function onScreenOrientationChange() {
+  gyroNeedsReference=true;
+}
+
+async function startGyro(source="normal") {
+  if(!("DeviceOrientationEvent" in window)){
+    showToast("この端末はジャイロに対応していません");
+    return false;
   }
-});
+
+  try{
+    if(typeof DeviceOrientationEvent.requestPermission==="function"){
+      const permission=await DeviceOrientationEvent.requestPermission();
+      if(permission!=="granted"){
+        showToast("ジャイロの使用が許可されませんでした");
+        return false;
+      }
+    }
+
+    window.removeEventListener("deviceorientation",onDeviceOrientation);
+    window.addEventListener("deviceorientation",onDeviceOrientation,true);
+    window.addEventListener("orientationchange",onScreenOrientationChange);
+
+    gyroEnabled=true;
+    gyroSource=source;
+    gyroNeedsReference=true;
+    $("gyroBtn").textContent="ジャイロを停止";
+    return true;
+  }catch(error){
+    console.error(error);
+    showToast("ジャイロを開始できませんでした");
+    return false;
+  }
+}
+
+function stopGyro(source=null) {
+  if(source && gyroSource!==source)return;
+
+  window.removeEventListener("deviceorientation",onDeviceOrientation);
+  window.removeEventListener("orientationchange",onScreenOrientationChange);
+  gyroEnabled=false;
+  gyroSource=null;
+  gyroReferenceQuaternion=null;
+  gyroBaseQuaternion=null;
+  gyroNeedsReference=true;
+  $("gyroBtn").textContent="ジャイロを有効化";
+}
+
+$("gyroBtn").onclick=async()=>{
+  if(gyroEnabled){
+    stopGyro();
+    showToast("ジャイロを停止しました");
+  }else{
+    const ok=await startGyro("normal");
+    if(ok)showToast("ジャイロを有効にしました");
+  }
+};
+
+/* =========================================================
+   Cardboard VR
+========================================================= */
+let vrScene=null;
+let vrCamera=null;
+let vrMaterial=null;
+let vrTarget=null;
+let vrQuad=null;
+let vrGeometry=null;
+
+function disposeCardboardResources() {
+  if(vrTarget)vrTarget.dispose();
+  if(vrMaterial)vrMaterial.dispose();
+  if(vrGeometry)vrGeometry.dispose();
+  if(vrQuad)vrScene?.remove(vrQuad);
+
+  vrTarget=null;
+  vrMaterial=null;
+  vrGeometry=null;
+  vrQuad=null;
+  vrScene=null;
+  vrCamera=null;
+}
+
+function setupCardboard() {
+  disposeCardboardResources();
+
+  vrTarget=new THREE.WebGLRenderTarget(
+    Math.max(1,Math.floor(innerWidth*renderer.getPixelRatio()/2)),
+    Math.max(1,Math.floor(innerHeight*renderer.getPixelRatio()))
+  );
+
+  vrScene=new THREE.Scene();
+  vrCamera=new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+
+  vrMaterial=new THREE.ShaderMaterial({
+    uniforms:{
+      tDiffuse:{value:vrTarget.texture},
+      strength:{value:.16}
+    },
+    vertexShader:`
+      varying vec2 vUv;
+      void main(){
+        vUv=uv;
+        gl_Position=vec4(position,1.0);
+      }
+    `,
+    fragmentShader:`
+      uniform sampler2D tDiffuse;
+      uniform float strength;
+      varying vec2 vUv;
+      void main(){
+        vec2 p=vUv-0.5;
+        float r2=dot(p,p);
+        vec2 uv=0.5+p*(1.0+strength*r2);
+        if(uv.x<0.0||uv.x>1.0||uv.y<0.0||uv.y>1.0){
+          gl_FragColor=vec4(0.0,0.0,0.0,1.0);
+        }else{
+          vec4 c=texture2D(tDiffuse,uv);
+          float vignette=smoothstep(0.0,0.18,min(
+            min(uv.x,1.0-uv.x),min(uv.y,1.0-uv.y)
+          ));
+          gl_FragColor=vec4(c.rgb*vignette,c.a);
+        }
+      }
+    `
+  });
+
+  vrQuad=new THREE.Mesh(new THREE.PlaneGeometry(2,2),vrMaterial);
+  vrScene.add(vrQuad);
+}
+
+function renderCardboard() {
+  if(!vrTarget||!vrScene)return;
+
+  const w=renderer.domElement.width;
+  const h=renderer.domElement.height;
+  const half=Math.floor(w/2);
+  const eyeDistance=.032;
+
+  const originalPosition=camera.position.clone();
+  const originalQuaternion=camera.quaternion.clone();
+  const right=new THREE.Vector3(1,0,0).applyQuaternion(camera.quaternion);
+
+  renderer.autoClear=true;
+
+  for(let eye=0;eye<2;eye++){
+    const offset=eye===0?-eyeDistance:eyeDistance;
+    camera.position.copy(originalPosition).addScaledVector(right,offset);
+
+    renderer.setRenderTarget(vrTarget);
+    renderer.setViewport(0,0,vrTarget.width,vrTarget.height);
+    renderer.clear();
+    renderer.render(scene,camera);
+
+    renderer.setRenderTarget(null);
+    renderer.setScissorTest(true);
+    renderer.setScissor(eye*half,0,eye===0?half:w-half,h);
+    renderer.setViewport(eye*half,0,eye===0?half:w-half,h);
+    vrMaterial.uniforms.tDiffuse.value=vrTarget.texture;
+    renderer.render(vrScene,vrCamera);
+  }
+
+  renderer.setScissorTest(false);
+  camera.position.copy(originalPosition);
+  camera.quaternion.copy(originalQuaternion);
+  renderer.setViewport(0,0,w,h);
+}
+
+async function enterCardboard() {
+  if(xrSession){
+    await xrSession.end();
+    xrSession=null;
+  }
+
+  cardboardMode=true;
+  document.body.classList.add("cardboard");
+  setupCardboard();
+  resize();
+
+  await startGyro("cardboard");
+  showToast("Cardboardモード");
+}
+
+function exitCardboard() {
+  cardboardMode=false;
+  document.body.classList.remove("cardboard");
+  stopGyro("cardboard");
+  disposeCardboardResources();
+  resize();
+  showToast("通常画面に戻りました");
+}
+
+$("cardboardBtn").onclick=enterCardboard;
+$("vrExit").onclick=exitCardboard;
 
 /* =========================================================
    WebXR
 ========================================================= */
-$("xrButton").addEventListener("click", async () => {
-  if (!navigator.xr) {
-    toast("このブラウザはWebXRに対応していません");
+$("xrBtn").onclick=async()=>{
+  if(!navigator.xr){
+    showToast("このブラウザはWebXRに対応していません");
     return;
   }
 
-  try {
-    const supported = await navigator.xr.isSessionSupported("immersive-vr");
-    if (!supported) {
-      toast("immersive-vrは利用できません");
+  try{
+    const supported=await navigator.xr.isSessionSupported("immersive-vr");
+    if(!supported){
+      showToast("VRモードに対応していません");
       return;
     }
 
-    xrSession = await navigator.xr.requestSession("immersive-vr", {
-      optionalFeatures: ["local-floor", "bounded-floor"]
+    if(cardboardMode)exitCardboard();
+
+    xrSession=await navigator.xr.requestSession("immersive-vr",{
+      optionalFeatures:["local-floor","bounded-floor"]
     });
 
+    renderer.xr.enabled=true;
     await renderer.xr.setSession(xrSession);
-    renderer.xr.enabled = true;
 
-    xrSession.addEventListener("end", () => {
-      renderer.xr.enabled = false;
-      xrSession = null;
+    xrSession.addEventListener("end",()=>{
+      xrSession=null;
+      renderer.xr.enabled=false;
     });
 
-    toast("WebXRを開始しました");
-  } catch (error) {
+  }catch(error){
     console.error(error);
-    toast("WebXRを開始できませんでした");
+    showToast("WebXRを開始できませんでした");
   }
-});
+};
 
 /* =========================================================
-   リサイズ・描画
+   画面サイズ
 ========================================================= */
 function resize() {
-  const width = Math.max(1, $("stage").clientWidth);
-  const height = Math.max(1, $("stage").clientHeight);
+  const width=innerWidth;
+  const height=innerHeight;
+  renderer.setSize(width,height);
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 
-  camera.aspect = width / height;
+  camera.aspect=width/height;
   camera.updateProjectionMatrix();
 
-  renderer.setSize(width, height, false);
-
-  if (cardboardMode) {
-    setupCardboard();
-  }
+  if(cardboardMode)setupCardboard();
 }
+window.addEventListener("resize",resize);
 
-window.addEventListener("resize", resize);
-window.addEventListener("orientationchange", () => {
-  setTimeout(resize, 250);
-});
+/* =========================================================
+   BGM
+========================================================= */
+const bgm=$("bgm");
+bgm.volume=.35;
 
-function animate() {
-  requestAnimationFrame(animate);
-
-  if (renderer.xr.isPresenting) {
-    renderer.render(scene, camera);
-    return;
+$("musicToggle").onclick=async()=>{
+  if(bgm.paused){
+    try{
+      await bgm.play();
+      $("musicToggle").textContent="⏸ 停止";
+    }catch(e){
+      showToast("BGMを再生できませんでした");
+    }
+  }else{
+    bgm.pause();
+    $("musicToggle").textContent="▶ 再生";
   }
+};
 
-  if (cardboardMode) {
-    renderCardboard();
-  } else {
-    renderer.setRenderTarget(null);
-    renderer.render(scene, camera);
-  }
-}
+$("musicMute").onclick=()=>{
+  bgm.muted=!bgm.muted;
+  $("musicMute").textContent=bgm.muted?"🔇":"🔊";
+};
+
+$("musicVolume").oninput=e=>{
+  bgm.volume=Number(e.target.value);
+};
 
 /* =========================================================
    起動
 ========================================================= */
-loadLocal();
-renderState();
-initializeHistory();
-resize();
-connectSupabase();
-animate();
+function showToast(message) {
+  const toast=$("toast");
+  toast.textContent=message;
+  toast.style.display="block";
+  clearTimeout(showToast.timer);
+  showToast.timer=setTimeout(()=>toast.style.display="none",2400);
+}
+
+function animate() {
+  if(snowParticles){
+    const positions=snowParticles.geometry.attributes.position;
+    for(let i=0;i<positions.count;i++){
+      positions.array[i*3+1]-=.012;
+      if(positions.array[i*3+1]<0){
+        positions.array[i*3+1]=15;
+      }
+    }
+    positions.needsUpdate=true;
+  }
+
+  if(starParticles){
+    starParticles.rotation.y+=.0003;
+  }
+
+  if(cardboardMode){
+    renderCardboard();
+  }else{
+    renderer.render(scene,camera);
+  }
+}
+
+renderer.setAnimationLoop(animate);
+
+/* =========================================================
+   初期化
+========================================================= */
+$("startBtn").onclick=async()=>{
+  userName=$("firstName").value.trim()||"Guest";
+  $("userName").value=userName;
+  $("modal").style.display="none";
+
+  if(!loadLocal()){
+    createCake();
+    createBackground("classic");
+  }
+
+  editorHistory=[];
+  historyIndex=-1;
+  commitChange("スタート");
+
+  await initSupabase();
+};
+
+createCake();
+createBackground("classic");
+updateSelectedInfo();
 
 </script>
 </body>
